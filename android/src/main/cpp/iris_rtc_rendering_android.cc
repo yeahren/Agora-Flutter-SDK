@@ -271,6 +271,111 @@ class RenderingOp {
   std::shared_ptr<GLContext> gl_context_;
 };
 
+class Texture2DRendering final : public RenderingOp {
+public:
+    explicit Texture2DRendering(std::shared_ptr<GLContext> &gl_context)
+            : RenderingOp(gl_context) {
+        LOGCATD("Rendering with Texture2DRendering");
+        shader_ = std::make_unique<ScopedShader>(vertex_shader_tex_2d_, frag_shader_tex_2d_);
+        GLuint program = shader_->GetProgram();
+
+        aPositionLoc_ = glGetAttribLocation(program, "a_Position");
+        texCoordLoc_ = glGetAttribLocation(program, "a_TexCoord");
+        texSamplerLoc_ = glGetUniformLocation(program, "s_texture");
+        texMatrixLoc_ = glGetUniformLocation(program, "u_texMatrix");
+    }
+    ~Texture2DRendering() override {
+        LOGCATD("Destroy Texture2DRendering");
+        shader_.reset();
+    }
+
+    void Rendering(const agora::media::base::VideoFrame *video_frame) final {
+        int textureId = video_frame->textureId;
+        const float *texMatrix = video_frame->matrix;
+
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+        CHECK_GL_ERROR()
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        CHECK_GL_ERROR()
+        glViewport(0, 0, video_frame->width, video_frame->height);
+        CHECK_GL_ERROR()
+
+        // Bind 2D texture
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, textureId);
+        glUniform1i(texSamplerLoc_, 0);
+
+        glVertexAttribPointer(aPositionLoc_, 2, GL_FLOAT, false, 0, vertices);
+        glEnableVertexAttribArray(aPositionLoc_);
+
+        glVertexAttribPointer(texCoordLoc_, 2, GL_FLOAT, false, 0, texCoords);
+        glEnableVertexAttribArray(texCoordLoc_);
+
+        // Copy the texture transformation matrix over.
+        glUniformMatrix4fv(texMatrixLoc_, 1, GL_FALSE, texMatrix);
+
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, indices);
+
+        gl_context_->Swap();
+
+        // Clean up
+        glDisableVertexAttribArray(aPositionLoc_);
+        glDisableVertexAttribArray(texCoordLoc_);
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
+    agora::media::base::VIDEO_PIXEL_FORMAT Format() final {
+        return agora::media::base::VIDEO_PIXEL_FORMAT::VIDEO_PIXEL_RGBA;
+    }
+
+private:
+    const GLchar *vertex_shader_tex_2d_ =
+            "attribute vec4 a_Position;\n"
+            "attribute vec2 a_TexCoord;\n"
+            "varying vec2 v_TexCoord;\n"
+            "void main() {\n"
+            "  gl_Position = a_Position;\n"
+            "  v_TexCoord = vec2(a_TexCoord.x, 1.0 - a_TexCoord.y);\n"
+            "}\n";
+
+    const GLchar *frag_shader_tex_2d_ =
+            "precision mediump float;\n"
+            "varying vec2 v_TexCoord;\n"
+            "uniform sampler2D s_texture;\n"
+            "void main() {\n"
+            "  gl_FragColor = texture2D(s_texture, v_TexCoord);\n"
+            "}\n";
+
+    // clang-format off
+    const GLfloat vertices[8] = {
+            -1.0f, 1.0f,
+            -1.0f, -1.0f,
+            1.0f,  -1.0f,
+            1.0f,  1.0f
+    };
+
+    const GLfloat texCoords[8] = {
+            0.0f, 0.0f,
+            0.0f, 1.0f,
+            1.0f, 1.0f,
+            1.0f, 0.0f
+    };
+
+    const GLushort indices[6] = {
+            0, 1, 2,
+            0, 2, 3
+    };// draw in this order: 0,1,2; 0,2,3
+
+    // clang-format on
+
+    GLint aPositionLoc_;
+    GLint texCoordLoc_;
+    GLint texMatrixLoc_;
+    GLint texSamplerLoc_;
+    std::unique_ptr<ScopedShader> shader_;
+};
+
+
 class OESTextureRendering final : public RenderingOp {
  public:
   explicit OESTextureRendering(std::shared_ptr<GLContext> &gl_context)
@@ -636,8 +741,12 @@ class NativeTextureRenderer final
       rendering_op_.reset();
     }
 
+      LOGCATE("video_frame->type: %d", video_frame->type);
+
     if (!rendering_op_) {
-      if (video_frame->type
+      if (video_frame->type == agora::media::base::VIDEO_PIXEL_FORMAT::VIDEO_TEXTURE_2D) {
+        rendering_op_ = std::make_unique<Texture2DRendering>(gl_context_);
+      } else if (video_frame->type
           == agora::media::base::VIDEO_PIXEL_FORMAT::VIDEO_TEXTURE_OES) {
         rendering_op_ = std::make_unique<OESTextureRendering>(gl_context_);
       } else if (video_frame->type

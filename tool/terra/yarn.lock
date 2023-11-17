@@ -7,26 +7,26 @@ __metadata:
 
 "@agoraio-extensions/cxx-parser@git@github.com:AgoraIO-Extensions/terra.git#head=main&workspace=cxx-parser":
   version: 0.1.9
-  resolution: "@agoraio-extensions/cxx-parser@git@github.com:AgoraIO-Extensions/terra.git#workspace=cxx-parser&commit=016edf9cd207de6fe9ac9df8defe4ad570ac2214"
+  resolution: "@agoraio-extensions/cxx-parser@git@github.com:AgoraIO-Extensions/terra.git#workspace=cxx-parser&commit=a6e156fd3612c94a8632094aa7ee32464f751f38"
   dependencies:
     glob: "npm:^10.3.4"
     yaml: "npm:^2.1.3"
   peerDependencies:
     "@agoraio-extensions/terra-core": "*"
-  checksum: 61ce4c76eabb98aa7841afa0b0ed2a16d1132a1a9bf9037ce2f52e7a2ab8ad0b1789cafee3e3255b6f4125a182fe65619069a4edaf84777cc02be7803754ae63
+  checksum: 4712fd2a4b81d59df1ff431347982a2e298102c82c6191ffdf5be48c0164e8db837857569d64ed61580708fdaa2ba6b581881671d20806d64e6b8259bb8a48e8
   languageName: node
   linkType: hard
 
 "@agoraio-extensions/terra-core@git@github.com:AgoraIO-Extensions/terra.git#head=main&workspace=terra-core":
   version: 0.1.5
-  resolution: "@agoraio-extensions/terra-core@git@github.com:AgoraIO-Extensions/terra.git#workspace=terra-core&commit=016edf9cd207de6fe9ac9df8defe4ad570ac2214"
-  checksum: 673c3b6246e097d180d40a899fdce23fdad80aa92f2b593173baba2aecc5d103a2d74ac346486c6a2349a1016ade82d48dd618c0860e6a29c680f471d1aea06a
+  resolution: "@agoraio-extensions/terra-core@git@github.com:AgoraIO-Extensions/terra.git#workspace=terra-core&commit=a6e156fd3612c94a8632094aa7ee32464f751f38"
+  checksum: d7113225ab004b2ff09de3c3718262925dc335f5ffb8ac2800bb96bfb2ad67a307063a425bd14654356d804586a785efe3856462e1087472463eb233a6793e44
   languageName: node
   linkType: hard
 
 "@agoraio-extensions/terra-legacy-cxx-parser@git@github.com:AgoraIO-Extensions/terra-legacy-cxx-parser.git#head=main":
   version: 0.1.5
-  resolution: "@agoraio-extensions/terra-legacy-cxx-parser@git@github.com:AgoraIO-Extensions/terra-legacy-cxx-parser.git#commit=008f1b84aee777364b006684914917393c78356b"
+  resolution: "@agoraio-extensions/terra-legacy-cxx-parser@git@github.com:AgoraIO-Extensions/terra-legacy-cxx-parser.git#commit=a245a52c16b13f3ac642377dbbcf41fef56e994b"
   dependencies:
     "@agoraio-extensions/cxx-parser": "git@github.com:AgoraIO-Extensions/terra.git#head=main&workspace=cxx-parser"
     "@agoraio-extensions/terra-core": "git@github.com:AgoraIO-Extensions/terra.git#head=main&workspace=terra-core"
@@ -38,13 +38,13 @@ __metadata:
     ts-node: "npm:^10.9.1"
     typescript: "npm:^5.1.6"
     yaml: "npm:^2.1.3"
-  checksum: c7af47edb4f36ed3b6fb1f20b04465c88ef1553fd7fb859c86f796a2dada3f9ddf1432115a1379a5a1d0e6e2609f6eb77cd823f83279a859c357b61d46d810c3
+  checksum: 741589f3276f0a4c1f1b5fcdfd7cc209c0f7a940eb967c4d2c05f6bf2e6a6a9d6e82fe6c84f5e4183085bf6093210e42944effac4a761d0db83a1beeac33dae1
   languageName: node
   linkType: hard
 
 "@agoraio-extensions/terra@git@github.com:AgoraIO-Extensions/terra.git#head=main&workspace=terra":
   version: 0.1.5
-  resolution: "@agoraio-extensions/terra@git@github.com:AgoraIO-Extensions/terra.git#workspace=terra&commit=016edf9cd207de6fe9ac9df8defe4ad570ac2214"
+  resolution: "@agoraio-extensions/terra@git@github.com:AgoraIO-Extensions/terra.git#workspace=terra&commit=a6e156fd3612c94a8632094aa7ee32464f751f38"
   dependencies:
     commander: "npm:^9.4.1"
     mustache: "npm:^4.2.0"
@@ -59,12 +59,12 @@ __metadata:
 
 "@agoraio-extensions/terra_shared_configs@git@github.com:AgoraIO-Extensions/terra_shared_configs.git#head=main":
   version: 1.0.2
-  resolution: "@agoraio-extensions/terra_shared_configs@git@github.com:AgoraIO-Extensions/terra_shared_configs.git#commit=63b627b40ab601edd4dcba8bbe8a7d3ef58d7c2a"
+  resolution: "@agoraio-extensions/terra_shared_configs@git@github.com:AgoraIO-Extensions/terra_shared_configs.git#commit=c1242866165c7250246311c62fe2e74856c1f31c"
   dependencies:
     "@agoraio-extensions/cxx-parser": "git@github.com:AgoraIO-Extensions/terra.git#head=main&workspace=cxx-parser"
     "@agoraio-extensions/terra-core": "git@github.com:AgoraIO-Extensions/terra.git#head=main&workspace=terra-core"
     mustache: "npm:^4.2.0"
-  checksum: 552b4e495440562a8a2c88a6af909a29f85b520ebae6dfa3497720a14a20f2effacf17f68cb0019c35c0c739c803a65bf40ce6b5a08706229f965aee0bb082d7
+  checksum: 945e0bf5c9db1f539c45a7c9409facf3f8d754b277d04f757fdf6d38b9aeebfb908226c7e4f1493ba2a8548384d294c5ae1050e8989616de210977c9730660a9
   languageName: node
   linkType: hard
 
@@ -964,11 +964,11 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:*, @types/node@npm:^20.5.9, @types/node@npm:^20.6.0":
-  version: 20.9.0
-  resolution: "@types/node@npm:20.9.0"
+  version: 20.9.1
+  resolution: "@types/node@npm:20.9.1"
   dependencies:
     undici-types: "npm:~5.26.4"
-  checksum: 755d07de735eafda4e20af75ad9d03bdbfddef327d790e9a896142eac7493db5d8501591376e1c8227aa12eeb88e522bc727c6024504842ed40e539e8a466db9
+  checksum: 0cb52c0840fe9a2e8f988564da6823bb3141e34fef8cb7264762c851c0dac5d9ef4859db422dfa41cd1a864ad126a9bd3b588d0285bc9af6de814de3280da9b3
   languageName: node
   linkType: hard
 
@@ -1310,9 +1310,9 @@ __metadata:
   linkType: hard
 
 "caniuse-lite@npm:^1.0.30001541":
-  version: 1.0.30001561
-  resolution: "caniuse-lite@npm:1.0.30001561"
-  checksum: 6e84c84026fee53edbdbb5aded7a04a036aae4c2e367cf6bdc90c6783a591e2fdcfcdebcc4e774aca61092e542a61200c8c16b06659396492426033c4dbcc618
+  version: 1.0.30001563
+  resolution: "caniuse-lite@npm:1.0.30001563"
+  checksum: a8b367d43e0307ec243d8df8515d563fa3de895e9698eec4539037aed400da81e0df737164da2a6b7104ab6e75b4ea63db0adebcaabe326f2792841980259256
   languageName: node
   linkType: hard
 
@@ -1545,9 +1545,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.4.535":
-  version: 1.4.579
-  resolution: "electron-to-chromium@npm:1.4.579"
-  checksum: 71c8b603db172b06338bc84747e99f06b398b3299eb4a677c9f48ed40aab1bc225b8c59199951450ae198e1f904a6fc6a87578db16eb7fadf716518759718e1c
+  version: 1.4.587
+  resolution: "electron-to-chromium@npm:1.4.587"
+  checksum: 320c533d55e59f225fff8cb7788ce32b70bff921d757a7663e46f87a6a4d7f35c11f63b1766cd98585af2201ed3ce746ab29f88934311b35f1dd1ab7bf09ccaa
   languageName: node
   linkType: hard
 
@@ -2633,9 +2633,11 @@ __metadata:
   linkType: hard
 
 "lru-cache@npm:^10.0.1, lru-cache@npm:^9.1.1 || ^10.0.0":
-  version: 10.0.1
-  resolution: "lru-cache@npm:10.0.1"
-  checksum: 982dabfb227b9a2daf56d712ae0e72e01115a28c0a2068cd71277bca04568f3417bbf741c6c7941abc5c620fd8059e34f15607f90ebccbfa0a17533322d27a8e
+  version: 10.0.2
+  resolution: "lru-cache@npm:10.0.2"
+  dependencies:
+    semver: "npm:^7.3.5"
+  checksum: 5c83a7a2a320a445129cb67a1794437db5483942df63536026fba1cb7ba2e1f7456037876cc9d31076132010f92cb943bee358d336dd94105e50ea971e6d737d
   languageName: node
   linkType: hard
 
@@ -3447,6 +3449,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "terra-test@workspace:."
   dependencies:
+    "@agoraio-extensions/cxx-parser": "git@github.com:AgoraIO-Extensions/terra.git#head=main&workspace=cxx-parser"
     "@agoraio-extensions/terra": "git@github.com:AgoraIO-Extensions/terra.git#head=main&workspace=terra"
     "@agoraio-extensions/terra-core": "git@github.com:AgoraIO-Extensions/terra.git#head=main&workspace=terra-core"
     "@agoraio-extensions/terra-legacy-cxx-parser": "git@github.com:AgoraIO-Extensions/terra-legacy-cxx-parser.git#head=main"

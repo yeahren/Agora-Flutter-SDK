@@ -29,7 +29,7 @@ function toCName(node: CXXTerraNode): string {
 }
 
 function cppStruct2CStruct(structt: Struct): string {
-    let structName = cStructName(structt.fullName);
+    let structName = toCName(structt);
     let structContent = '';
     let mvs = structt.member_variables.map((it) => {
         let type = '';

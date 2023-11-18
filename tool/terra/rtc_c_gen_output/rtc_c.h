@@ -7,29 +7,29 @@ bool hasVideo;
 } agora__UserInfo__C;
 
 
-typedef struct agora__rtc__VideoDimensions__C
+typedef struct agora_rtc__VideoDimensions__C
 {
   int width;
 int height;
-} agora__rtc__VideoDimensions__C;
+} agora_rtc__VideoDimensions__C;
 
 
-typedef struct agora__rtc__SenderOptions__C
+typedef struct agora_rtc__SenderOptions__C
 {
   agora__rtc__TCcMode__C ccMode;
 agora__rtc__VIDEO_CODEC_TYPE__C codecType;
 int targetBitrate;
-} agora__rtc__SenderOptions__C;
+} agora_rtc__SenderOptions__C;
 
 
-typedef struct agora__rtc__EncodedAudioFrameAdvancedSettings__C
+typedef struct agora_rtc__EncodedAudioFrameAdvancedSettings__C
 {
   bool speech;
 bool sendEvenIfEmpty;
-} agora__rtc__EncodedAudioFrameAdvancedSettings__C;
+} agora_rtc__EncodedAudioFrameAdvancedSettings__C;
 
 
-typedef struct agora__rtc__EncodedAudioFrameInfo__C
+typedef struct agora_rtc__EncodedAudioFrameInfo__C
 {
   agora__rtc__AUDIO_CODEC_TYPE__C codec;
 int sampleRateHz;
@@ -37,27 +37,27 @@ int samplesPerChannel;
 int numberOfChannels;
 agora__rtc__EncodedAudioFrameAdvancedSettings__C advancedSettings;
 int64_t__C captureTimeMs;
-} agora__rtc__EncodedAudioFrameInfo__C;
+} agora_rtc__EncodedAudioFrameInfo__C;
 
 
-typedef struct agora__rtc__AudioPcmDataInfo__C
+typedef struct agora_rtc__AudioPcmDataInfo__C
 {
   size_t__C samplesPerChannel;
 int16_t__C channelNum;
 size_t__C samplesOut;
 int64_t__C elapsedTimeMs;
 int64_t__C ntpTimeMs;
-} agora__rtc__AudioPcmDataInfo__C;
+} agora_rtc__AudioPcmDataInfo__C;
 
 
-typedef struct agora__rtc__VideoSubscriptionOptions__C
+typedef struct agora_rtc__VideoSubscriptionOptions__C
 {
   Optional<agora__rtc__VIDEO_STREAM_TYPE>__C type;
 Optional<bool>__C encodedFrameOnly;
-} agora__rtc__VideoSubscriptionOptions__C;
+} agora_rtc__VideoSubscriptionOptions__C;
 
 
-typedef struct agora__rtc__EncodedVideoFrameInfo__C
+typedef struct agora_rtc__EncodedVideoFrameInfo__C
 {
   agora__rtc__VIDEO_CODEC_TYPE__C codecType;
 int width;
@@ -70,32 +70,32 @@ int64_t__C captureTimeMs;
 int64_t__C decodeTimeMs;
 agora__rtc__uid_t__C uid;
 agora__rtc__VIDEO_STREAM_TYPE__C streamType;
-} agora__rtc__EncodedVideoFrameInfo__C;
+} agora_rtc__EncodedVideoFrameInfo__C;
 
 
-typedef struct agora__rtc__AdvanceOptions__C
+typedef struct agora_rtc__AdvanceOptions__C
 {
   agora__rtc__ENCODING_PREFERENCE__C encodingPreference;
 agora__rtc__COMPRESSION_PREFERENCE__C compressionPreference;
-} agora__rtc__AdvanceOptions__C;
+} agora_rtc__AdvanceOptions__C;
 
 
-typedef struct agora__rtc__CodecCapLevels__C
+typedef struct agora_rtc__CodecCapLevels__C
 {
   agora__rtc__VIDEO_CODEC_CAPABILITY_LEVEL__C hwDecodingLevel;
 agora__rtc__VIDEO_CODEC_CAPABILITY_LEVEL__C swDecodingLevel;
-} agora__rtc__CodecCapLevels__C;
+} agora_rtc__CodecCapLevels__C;
 
 
-typedef struct agora__rtc__CodecCapInfo__C
+typedef struct agora_rtc__CodecCapInfo__C
 {
   agora__rtc__VIDEO_CODEC_TYPE__C codecType;
 int codecCapMask;
 agora__rtc__CodecCapLevels__C codecLevels;
-} agora__rtc__CodecCapInfo__C;
+} agora_rtc__CodecCapInfo__C;
 
 
-typedef struct agora__rtc__VideoEncoderConfiguration__C
+typedef struct agora_rtc__VideoEncoderConfiguration__C
 {
   agora__rtc__VIDEO_CODEC_TYPE__C codecType;
 agora__rtc__VideoDimensions__C dimensions;
@@ -106,52 +106,52 @@ agora__rtc__ORIENTATION_MODE__C orientationMode;
 agora__rtc__DEGRADATION_PREFERENCE__C degradationPreference;
 agora__rtc__VIDEO_MIRROR_MODE_TYPE__C mirrorMode;
 agora__rtc__AdvanceOptions__C advanceOptions;
-} agora__rtc__VideoEncoderConfiguration__C;
+} agora_rtc__VideoEncoderConfiguration__C;
 
 
-typedef struct agora__rtc__DataStreamConfig__C
+typedef struct agora_rtc__DataStreamConfig__C
 {
   bool syncWithAudio;
 bool ordered;
-} agora__rtc__DataStreamConfig__C;
+} agora_rtc__DataStreamConfig__C;
 
 
-typedef struct agora__rtc__SimulcastStreamConfig__C
+typedef struct agora_rtc__SimulcastStreamConfig__C
 {
   agora__rtc__VideoDimensions__C dimensions;
 int kBitrate;
 int framerate;
-} agora__rtc__SimulcastStreamConfig__C;
+} agora_rtc__SimulcastStreamConfig__C;
 
 
-typedef struct agora__rtc__Rectangle__C
+typedef struct agora_rtc__Rectangle__C
 {
   int x;
 int y;
 int width;
 int height;
-} agora__rtc__Rectangle__C;
+} agora_rtc__Rectangle__C;
 
 
-typedef struct agora__rtc__WatermarkRatio__C
+typedef struct agora_rtc__WatermarkRatio__C
 {
   float xRatio;
 float yRatio;
 float widthRatio;
-} agora__rtc__WatermarkRatio__C;
+} agora_rtc__WatermarkRatio__C;
 
 
-typedef struct agora__rtc__WatermarkOptions__C
+typedef struct agora_rtc__WatermarkOptions__C
 {
   bool visibleInPreview;
 agora__rtc__Rectangle__C positionInLandscapeMode;
 agora__rtc__Rectangle__C positionInPortraitMode;
 agora__rtc__WatermarkRatio__C watermarkRatio;
 agora__rtc__WATERMARK_FIT_MODE__C mode;
-} agora__rtc__WatermarkOptions__C;
+} agora_rtc__WatermarkOptions__C;
 
 
-typedef struct agora__rtc__RtcStats__C
+typedef struct agora_rtc__RtcStats__C
 {
   unsigned int duration;
 unsigned int txBytes;
@@ -186,24 +186,24 @@ int firstVideoKeyFrameDecodedDurationAfterUnmute;
 int firstVideoKeyFrameRenderedDurationAfterUnmute;
 int txPacketLossRate;
 int rxPacketLossRate;
-} agora__rtc__RtcStats__C;
+} agora_rtc__RtcStats__C;
 
 
-typedef struct agora__rtc__ClientRoleOptions__C
+typedef struct agora_rtc__ClientRoleOptions__C
 {
   agora__rtc__AUDIENCE_LATENCY_LEVEL_TYPE__C audienceLatencyLevel;
-} agora__rtc__ClientRoleOptions__C;
+} agora_rtc__ClientRoleOptions__C;
 
 
-typedef struct agora__rtc__VideoFormat__C
+typedef struct agora_rtc__VideoFormat__C
 {
   int width;
 int height;
 int fps;
-} agora__rtc__VideoFormat__C;
+} agora_rtc__VideoFormat__C;
 
 
-typedef struct agora__rtc__VideoTrackInfo__C
+typedef struct agora_rtc__VideoTrackInfo__C
 {
   bool isLocal;
 agora__rtc__uid_t__C ownerUid;
@@ -214,32 +214,32 @@ agora__rtc__VIDEO_CODEC_TYPE__C codecType;
 bool encodedFrameOnly;
 agora__rtc__VIDEO_SOURCE_TYPE__C sourceType;
 uint32_t__C observationPosition;
-} agora__rtc__VideoTrackInfo__C;
+} agora_rtc__VideoTrackInfo__C;
 
 
-typedef struct agora__rtc__AudioVolumeInfo__C
+typedef struct agora_rtc__AudioVolumeInfo__C
 {
   agora__rtc__uid_t__C uid;
 unsigned int volume;
 unsigned int vad;
 double voicePitch;
-} agora__rtc__AudioVolumeInfo__C;
+} agora_rtc__AudioVolumeInfo__C;
 
 
-typedef struct agora__rtc__DeviceInfo__C
+typedef struct agora_rtc__DeviceInfo__C
 {
   bool isLowLatencyAudioSupported;
-} agora__rtc__DeviceInfo__C;
+} agora_rtc__DeviceInfo__C;
 
 
-typedef struct agora__rtc__Packet__C
+typedef struct agora_rtc__Packet__C
 {
   unsigned char const* buffer;
 unsigned int size;
-} agora__rtc__Packet__C;
+} agora_rtc__Packet__C;
 
 
-typedef struct agora__rtc__LocalAudioStats__C
+typedef struct agora_rtc__LocalAudioStats__C
 {
   int numChannels;
 int sentSampleRate;
@@ -247,10 +247,10 @@ int sentBitrate;
 int internalCodec;
 unsigned short txPacketLossRate;
 int audioDeviceDelay;
-} agora__rtc__LocalAudioStats__C;
+} agora_rtc__LocalAudioStats__C;
 
 
-typedef struct agora__rtc__RtcImage__C
+typedef struct agora_rtc__RtcImage__C
 {
   char const* url;
 int x;
@@ -259,17 +259,17 @@ int width;
 int height;
 int zOrder;
 double alpha;
-} agora__rtc__RtcImage__C;
+} agora_rtc__RtcImage__C;
 
 
-typedef struct agora__rtc__LiveStreamAdvancedFeature__C
+typedef struct agora_rtc__LiveStreamAdvancedFeature__C
 {
   char const* featureName;
 bool opened;
-} agora__rtc__LiveStreamAdvancedFeature__C;
+} agora_rtc__LiveStreamAdvancedFeature__C;
 
 
-typedef struct agora__rtc__TranscodingUser__C
+typedef struct agora_rtc__TranscodingUser__C
 {
   agora__rtc__uid_t__C uid;
 int x;
@@ -279,10 +279,10 @@ int height;
 int zOrder;
 double alpha;
 int audioChannel;
-} agora__rtc__TranscodingUser__C;
+} agora_rtc__TranscodingUser__C;
 
 
-typedef struct agora__rtc__LiveTranscoding__C
+typedef struct agora_rtc__LiveTranscoding__C
 {
   int width;
 int height;
@@ -307,10 +307,10 @@ int audioChannels;
 agora__rtc__AUDIO_CODEC_PROFILE_TYPE__C audioCodecProfile;
 agora__rtc__LiveStreamAdvancedFeature*__C advancedFeatures;
 unsigned int advancedFeatureCount;
-} agora__rtc__LiveTranscoding__C;
+} agora_rtc__LiveTranscoding__C;
 
 
-typedef struct agora__rtc__TranscodingVideoStream__C
+typedef struct agora_rtc__TranscodingVideoStream__C
 {
   agora__rtc__VIDEO_SOURCE_TYPE__C sourceType;
 agora__rtc__uid_t__C remoteUserUid;
@@ -323,53 +323,53 @@ int height;
 int zOrder;
 double alpha;
 bool mirror;
-} agora__rtc__TranscodingVideoStream__C;
+} agora_rtc__TranscodingVideoStream__C;
 
 
-typedef struct agora__rtc__LocalTranscoderConfiguration__C
+typedef struct agora_rtc__LocalTranscoderConfiguration__C
 {
   unsigned int streamCount;
 agora__rtc__TranscodingVideoStream*__C videoInputStreams;
 agora__rtc__VideoEncoderConfiguration__C videoOutputConfiguration;
 bool syncWithPrimaryCamera;
-} agora__rtc__LocalTranscoderConfiguration__C;
+} agora_rtc__LocalTranscoderConfiguration__C;
 
 
-typedef struct agora__rtc__LastmileProbeConfig__C
+typedef struct agora_rtc__LastmileProbeConfig__C
 {
   bool probeUplink;
 bool probeDownlink;
 unsigned int expectedUplinkBitrate;
 unsigned int expectedDownlinkBitrate;
-} agora__rtc__LastmileProbeConfig__C;
+} agora_rtc__LastmileProbeConfig__C;
 
 
-typedef struct agora__rtc__LastmileProbeOneWayResult__C
+typedef struct agora_rtc__LastmileProbeOneWayResult__C
 {
   unsigned int packetLossRate;
 unsigned int jitter;
 unsigned int availableBandwidth;
-} agora__rtc__LastmileProbeOneWayResult__C;
+} agora_rtc__LastmileProbeOneWayResult__C;
 
 
-typedef struct agora__rtc__LastmileProbeResult__C
+typedef struct agora_rtc__LastmileProbeResult__C
 {
   agora__rtc__LASTMILE_PROBE_RESULT_STATE__C state;
 agora__rtc__LastmileProbeOneWayResult__C uplinkReport;
 agora__rtc__LastmileProbeOneWayResult__C downlinkReport;
 unsigned int rtt;
-} agora__rtc__LastmileProbeResult__C;
+} agora_rtc__LastmileProbeResult__C;
 
 
-typedef struct agora__rtc__WlAccStats__C
+typedef struct agora_rtc__WlAccStats__C
 {
   unsigned short e2eDelayPercent;
 unsigned short frozenRatioPercent;
 unsigned short lossRatePercent;
-} agora__rtc__WlAccStats__C;
+} agora_rtc__WlAccStats__C;
 
 
-typedef struct agora__rtc__VideoCanvas__C
+typedef struct agora_rtc__VideoCanvas__C
 {
   agora__view_t__C view;
 agora__rtc__uid_t__C uid;
@@ -381,63 +381,63 @@ agora__rtc__VIDEO_SOURCE_TYPE__C sourceType;
 int mediaPlayerId;
 agora__rtc__Rectangle__C cropArea;
 bool enableAlphaMask;
-} agora__rtc__VideoCanvas__C;
+} agora_rtc__VideoCanvas__C;
 
 
-typedef struct agora__rtc__BeautyOptions__C
+typedef struct agora_rtc__BeautyOptions__C
 {
   agora__rtc__BeautyOptions__LIGHTENING_CONTRAST_LEVEL__C lighteningContrastLevel;
 float lighteningLevel;
 float smoothnessLevel;
 float rednessLevel;
 float sharpnessLevel;
-} agora__rtc__BeautyOptions__C;
+} agora_rtc__BeautyOptions__C;
 
 
-typedef struct agora__rtc__LowlightEnhanceOptions__C
+typedef struct agora_rtc__LowlightEnhanceOptions__C
 {
   agora__rtc__LowlightEnhanceOptions__LOW_LIGHT_ENHANCE_MODE__C mode;
 agora__rtc__LowlightEnhanceOptions__LOW_LIGHT_ENHANCE_LEVEL__C level;
-} agora__rtc__LowlightEnhanceOptions__C;
+} agora_rtc__LowlightEnhanceOptions__C;
 
 
-typedef struct agora__rtc__VideoDenoiserOptions__C
+typedef struct agora_rtc__VideoDenoiserOptions__C
 {
   agora__rtc__VideoDenoiserOptions__VIDEO_DENOISER_MODE__C mode;
 agora__rtc__VideoDenoiserOptions__VIDEO_DENOISER_LEVEL__C level;
-} agora__rtc__VideoDenoiserOptions__C;
+} agora_rtc__VideoDenoiserOptions__C;
 
 
-typedef struct agora__rtc__ColorEnhanceOptions__C
+typedef struct agora_rtc__ColorEnhanceOptions__C
 {
   float strengthLevel;
 float skinProtectLevel;
-} agora__rtc__ColorEnhanceOptions__C;
+} agora_rtc__ColorEnhanceOptions__C;
 
 
-typedef struct agora__rtc__VirtualBackgroundSource__C
+typedef struct agora_rtc__VirtualBackgroundSource__C
 {
   agora__rtc__VirtualBackgroundSource__BACKGROUND_SOURCE_TYPE__C background_source_type;
 unsigned int color;
 char const* source;
 agora__rtc__VirtualBackgroundSource__BACKGROUND_BLUR_DEGREE__C blur_degree;
-} agora__rtc__VirtualBackgroundSource__C;
+} agora_rtc__VirtualBackgroundSource__C;
 
 
-typedef struct agora__rtc__SegmentationProperty__C
+typedef struct agora_rtc__SegmentationProperty__C
 {
   agora__rtc__SegmentationProperty__SEG_MODEL_TYPE__C modelType;
 float greenCapacity;
-} agora__rtc__SegmentationProperty__C;
+} agora_rtc__SegmentationProperty__C;
 
 
-typedef struct agora__rtc__AudioTrackConfig__C
+typedef struct agora_rtc__AudioTrackConfig__C
 {
   bool enableLocalPlayback;
-} agora__rtc__AudioTrackConfig__C;
+} agora_rtc__AudioTrackConfig__C;
 
 
-typedef struct agora__rtc__ScreenCaptureParameters__C
+typedef struct agora_rtc__ScreenCaptureParameters__C
 {
   agora__rtc__VideoDimensions__C dimensions;
 int frameRate;
@@ -449,10 +449,10 @@ int excludeWindowCount;
 int highLightWidth;
 unsigned int highLightColor;
 bool enableHighLight;
-} agora__rtc__ScreenCaptureParameters__C;
+} agora_rtc__ScreenCaptureParameters__C;
 
 
-typedef struct agora__rtc__AudioRecordingConfiguration__C
+typedef struct agora_rtc__AudioRecordingConfiguration__C
 {
   char const* filePath;
 bool encode;
@@ -460,66 +460,66 @@ int sampleRate;
 agora__rtc__AUDIO_FILE_RECORDING_TYPE__C fileRecordingType;
 agora__rtc__AUDIO_RECORDING_QUALITY_TYPE__C quality;
 int recordingChannel;
-} agora__rtc__AudioRecordingConfiguration__C;
+} agora_rtc__AudioRecordingConfiguration__C;
 
 
-typedef struct agora__rtc__AudioEncodedFrameObserverConfig__C
+typedef struct agora_rtc__AudioEncodedFrameObserverConfig__C
 {
   agora__rtc__AUDIO_ENCODED_FRAME_OBSERVER_POSITION__C postionType;
 agora__rtc__AUDIO_ENCODING_TYPE__C encodingType;
-} agora__rtc__AudioEncodedFrameObserverConfig__C;
+} agora_rtc__AudioEncodedFrameObserverConfig__C;
 
 
-typedef struct agora__rtc__ChannelMediaInfo__C
+typedef struct agora_rtc__ChannelMediaInfo__C
 {
   char const* channelName;
 char const* token;
 agora__rtc__uid_t__C uid;
-} agora__rtc__ChannelMediaInfo__C;
+} agora_rtc__ChannelMediaInfo__C;
 
 
-typedef struct agora__rtc__ChannelMediaRelayConfiguration__C
+typedef struct agora_rtc__ChannelMediaRelayConfiguration__C
 {
   agora__rtc__ChannelMediaInfo*__C srcInfo;
 agora__rtc__ChannelMediaInfo*__C destInfos;
 int destCount;
-} agora__rtc__ChannelMediaRelayConfiguration__C;
+} agora_rtc__ChannelMediaRelayConfiguration__C;
 
 
-typedef struct agora__rtc__UplinkNetworkInfo__C
+typedef struct agora_rtc__UplinkNetworkInfo__C
 {
   int video_encoder_target_bitrate_bps;
-} agora__rtc__UplinkNetworkInfo__C;
+} agora_rtc__UplinkNetworkInfo__C;
 
 
-typedef struct agora__rtc__DownlinkNetworkInfo__C
+typedef struct agora_rtc__DownlinkNetworkInfo__C
 {
   int lastmile_buffer_delay_time_ms;
 int bandwidth_estimation_bps;
 int total_downscale_level_count;
 agora__rtc__DownlinkNetworkInfo__PeerDownlinkInfo*__C peer_downlink_info;
 int total_received_video_count;
-} agora__rtc__DownlinkNetworkInfo__C;
+} agora_rtc__DownlinkNetworkInfo__C;
 
 
-typedef struct agora__rtc__PeerDownlinkInfo__C
+typedef struct agora_rtc__PeerDownlinkInfo__C
 {
   char const* uid;
 agora__rtc__VIDEO_STREAM_TYPE__C stream_type;
 agora__rtc__REMOTE_VIDEO_DOWNSCALE_LEVEL__C current_downscale_level;
 int expected_bitrate_bps;
-} agora__rtc__PeerDownlinkInfo__C;
+} agora_rtc__PeerDownlinkInfo__C;
 
 
-typedef struct agora__rtc__EncryptionConfig__C
+typedef struct agora_rtc__EncryptionConfig__C
 {
   agora__rtc__ENCRYPTION_MODE__C encryptionMode;
 char const* encryptionKey;
 uint8_t[32]__C encryptionKdfSalt;
-} agora__rtc__EncryptionConfig__C;
+} agora_rtc__EncryptionConfig__C;
 
 
-typedef struct agora__rtc__EchoTestConfiguration__C
+typedef struct agora_rtc__EchoTestConfiguration__C
 {
   agora__view_t__C view;
 bool enableAudio;
@@ -527,43 +527,43 @@ bool enableVideo;
 char const* token;
 char const* channelId;
 int intervalInSeconds;
-} agora__rtc__EchoTestConfiguration__C;
+} agora_rtc__EchoTestConfiguration__C;
 
 
-typedef struct agora__rtc__UserInfo__C
+typedef struct agora_rtc__UserInfo__C
 {
   agora__rtc__uid_t__C uid;
 char[256] userAccount;
-} agora__rtc__UserInfo__C;
+} agora_rtc__UserInfo__C;
 
 
-typedef struct agora__rtc__ScreenVideoParameters__C
+typedef struct agora_rtc__ScreenVideoParameters__C
 {
   agora__rtc__VideoDimensions__C dimensions;
 int frameRate;
 int bitrate;
 agora__rtc__VIDEO_CONTENT_HINT__C contentHint;
-} agora__rtc__ScreenVideoParameters__C;
+} agora_rtc__ScreenVideoParameters__C;
 
 
-typedef struct agora__rtc__ScreenAudioParameters__C
+typedef struct agora_rtc__ScreenAudioParameters__C
 {
   int sampleRate;
 int channels;
 int captureSignalVolume;
-} agora__rtc__ScreenAudioParameters__C;
+} agora_rtc__ScreenAudioParameters__C;
 
 
-typedef struct agora__rtc__ScreenCaptureParameters2__C
+typedef struct agora_rtc__ScreenCaptureParameters2__C
 {
   bool captureAudio;
 agora__rtc__ScreenAudioParameters__C audioParams;
 bool captureVideo;
 agora__rtc__ScreenVideoParameters__C videoParams;
-} agora__rtc__ScreenCaptureParameters2__C;
+} agora_rtc__ScreenCaptureParameters2__C;
 
 
-typedef struct agora__rtc__VideoRenderingTracingInfo__C
+typedef struct agora_rtc__VideoRenderingTracingInfo__C
 {
   int elapsedTime;
 int start2JoinChannel;
@@ -572,32 +572,32 @@ int joinSuccess2RemoteJoined;
 int remoteJoined2SetView;
 int remoteJoined2UnmuteVideo;
 int remoteJoined2PacketReceived;
-} agora__rtc__VideoRenderingTracingInfo__C;
+} agora_rtc__VideoRenderingTracingInfo__C;
 
 
-typedef struct agora__rtc__RecorderStreamInfo__C
+typedef struct agora_rtc__RecorderStreamInfo__C
 {
   char const* channelId;
 agora__rtc__uid_t__C uid;
-} agora__rtc__RecorderStreamInfo__C;
+} agora_rtc__RecorderStreamInfo__C;
 
 
-typedef struct agora__rtc__LogUploadServerInfo__C
+typedef struct agora_rtc__LogUploadServerInfo__C
 {
   char const* serverDomain;
 char const* serverPath;
 int serverPort;
 bool serverHttps;
-} agora__rtc__LogUploadServerInfo__C;
+} agora_rtc__LogUploadServerInfo__C;
 
 
-typedef struct agora__rtc__AdvancedConfigInfo__C
+typedef struct agora_rtc__AdvancedConfigInfo__C
 {
   agora__rtc__LogUploadServerInfo__C logUploadServer;
-} agora__rtc__AdvancedConfigInfo__C;
+} agora_rtc__AdvancedConfigInfo__C;
 
 
-typedef struct agora__rtc__LocalAccessPointConfiguration__C
+typedef struct agora_rtc__LocalAccessPointConfiguration__C
 {
   char const** ipList;
 int ipListSize;
@@ -606,7 +606,7 @@ int domainListSize;
 char const* verifyDomainName;
 agora__rtc__LOCAL_PROXY_MODE__C mode;
 agora__rtc__AdvancedConfigInfo__C advancedConfig;
-} agora__rtc__LocalAccessPointConfiguration__C;
+} agora_rtc__LocalAccessPointConfiguration__C;
 
 
 typedef struct agora__SpatialAudioParams__C
@@ -622,45 +622,45 @@ Optional<bool>__C enable_doppler;
 } agora__SpatialAudioParams__C;
 
 
-typedef struct agora__rtc__AudioParameters__C
+typedef struct agora_rtc__AudioParameters__C
 {
   int sample_rate;
 size_t__C channels;
 size_t__C frames_per_buffer;
-} agora__rtc__AudioParameters__C;
+} agora_rtc__AudioParameters__C;
 
 
-typedef struct agora__media__ContentInspectModule__C
+typedef struct agora_media__ContentInspectModule__C
 {
   agora__media__CONTENT_INSPECT_TYPE__C type;
 unsigned int interval;
-} agora__media__ContentInspectModule__C;
+} agora_media__ContentInspectModule__C;
 
 
-typedef struct agora__media__ContentInspectConfig__C
+typedef struct agora_media__ContentInspectConfig__C
 {
   char const* extraInfo;
 char const* serverConfig;
 agora__media__ContentInspectModule[32]__C modules;
 int moduleCount;
-} agora__media__ContentInspectConfig__C;
+} agora_media__ContentInspectConfig__C;
 
 
-typedef struct agora__media__base__PacketOptions__C
+typedef struct agora_media_base__PacketOptions__C
 {
   uint32_t__C timestamp;
 uint8_t__C audioLevelIndication;
-} agora__media__base__PacketOptions__C;
+} agora_media_base__PacketOptions__C;
 
 
-typedef struct agora__media__base__AudioEncodedFrameInfo__C
+typedef struct agora_media_base__AudioEncodedFrameInfo__C
 {
   uint64_t__C sendTs;
 uint8_t__C codec;
-} agora__media__base__AudioEncodedFrameInfo__C;
+} agora_media_base__AudioEncodedFrameInfo__C;
 
 
-typedef struct agora__media__base__AudioPcmFrame__C
+typedef struct agora_media_base__AudioPcmFrame__C
 {
   int64_t__C capture_timestamp;
 size_t__C samples_per_channel_;
@@ -668,10 +668,10 @@ int sample_rate_hz_;
 size_t__C num_channels_;
 rtc__BYTES_PER_SAMPLE__C bytes_per_sample;
 int16_t[3840]__C data_;
-} agora__media__base__AudioPcmFrame__C;
+} agora_media_base__AudioPcmFrame__C;
 
 
-typedef struct agora__media__base__ExternalVideoFrame__C
+typedef struct agora_media_base__ExternalVideoFrame__C
 {
   agora__media__base__ExternalVideoFrame__VIDEO_BUFFER_TYPE__C type;
 agora__media__base__VIDEO_PIXEL_FORMAT__C format;
@@ -693,10 +693,10 @@ int metadata_size;
 uint8_t*__C alphaBuffer;
 void* d3d11_texture_2d;
 int texture_slice_index;
-} agora__media__base__ExternalVideoFrame__C;
+} agora_media_base__ExternalVideoFrame__C;
 
 
-typedef struct agora__media__base__VideoFrame__C
+typedef struct agora_media_base__VideoFrame__C
 {
   agora__media__base__VIDEO_PIXEL_FORMAT__C type;
 int width;
@@ -718,10 +718,10 @@ void* d3d11Texture2d;
 float[16] matrix;
 uint8_t*__C alphaBuffer;
 void* pixelBuffer;
-} agora__media__base__VideoFrame__C;
+} agora_media_base__VideoFrame__C;
 
 
-typedef struct agora__media__AudioFrame__C
+typedef struct agora_media__AudioFrame__C
 {
   agora__media__IAudioFrameObserverBase__AUDIO_FRAME_TYPE__C type;
 int samplesPerChannel;
@@ -732,51 +732,51 @@ void* buffer;
 int64_t__C renderTimeMs;
 int avsync_type;
 int64_t__C presentationMs;
-} agora__media__AudioFrame__C;
+} agora_media__AudioFrame__C;
 
 
-typedef struct agora__media__AudioParams__C
+typedef struct agora_media__AudioParams__C
 {
   int sample_rate;
 int channels;
 rtc__RAW_AUDIO_FRAME_OP_MODE_TYPE__C mode;
 int samples_per_call;
-} agora__media__AudioParams__C;
+} agora_media__AudioParams__C;
 
 
-typedef struct agora__media__AudioSpectrumData__C
+typedef struct agora_media__AudioSpectrumData__C
 {
   float const* audioSpectrumData;
 int dataLength;
-} agora__media__AudioSpectrumData__C;
+} agora_media__AudioSpectrumData__C;
 
 
-typedef struct agora__media__UserAudioSpectrumInfo__C
+typedef struct agora_media__UserAudioSpectrumInfo__C
 {
   agora__rtc__uid_t__C uid;
 AudioSpectrumData__C spectrumData;
-} agora__media__UserAudioSpectrumInfo__C;
+} agora_media__UserAudioSpectrumInfo__C;
 
 
-typedef struct agora__media__MediaRecorderConfiguration__C
+typedef struct agora_media__MediaRecorderConfiguration__C
 {
   char const* storagePath;
 agora__media__MediaRecorderContainerFormat__C containerFormat;
 agora__media__MediaRecorderStreamType__C streamType;
 int maxDurationMs;
 int recorderInfoUpdateInterval;
-} agora__media__MediaRecorderConfiguration__C;
+} agora_media__MediaRecorderConfiguration__C;
 
 
-typedef struct agora__media__RecorderInfo__C
+typedef struct agora_media__RecorderInfo__C
 {
   char const* fileName;
 unsigned int durationMs;
 unsigned int fileSize;
-} agora__media__RecorderInfo__C;
+} agora_media__RecorderInfo__C;
 
 
-typedef struct agora__media__base__PlayerStreamInfo__C
+typedef struct agora_media_base__PlayerStreamInfo__C
 {
   int streamIndex;
 agora__media__base__MEDIA_STREAM_TYPE__C streamType;
@@ -791,33 +791,33 @@ int audioSampleRate;
 int audioChannels;
 int audioBitsPerSample;
 int64_t__C duration;
-} agora__media__base__PlayerStreamInfo__C;
+} agora_media_base__PlayerStreamInfo__C;
 
 
-typedef struct agora__media__base__SrcInfo__C
+typedef struct agora_media_base__SrcInfo__C
 {
   int bitrateInKbps;
 char const* name;
-} agora__media__base__SrcInfo__C;
+} agora_media_base__SrcInfo__C;
 
 
-typedef struct agora__media__base__CacheStatistics__C
+typedef struct agora_media_base__CacheStatistics__C
 {
   int64_t__C fileSize;
 int64_t__C cacheSize;
 int64_t__C downloadSize;
-} agora__media__base__CacheStatistics__C;
+} agora_media_base__CacheStatistics__C;
 
 
-typedef struct agora__media__base__PlayerUpdatedInfo__C
+typedef struct agora_media_base__PlayerUpdatedInfo__C
 {
   Optional<const char *>__C playerId;
 Optional<const char *>__C deviceId;
 Optional<agora__media__base__CacheStatistics>__C cacheStatistics;
-} agora__media__base__PlayerUpdatedInfo__C;
+} agora_media_base__PlayerUpdatedInfo__C;
 
 
-typedef struct agora__media__base__MediaSource__C
+typedef struct agora_media_base__MediaSource__C
 {
   char const* url;
 char const* uri;
@@ -827,56 +827,56 @@ bool enableCache;
 Optional<bool>__C isAgoraSource;
 Optional<bool>__C isLiveSource;
 agora__media__base__IMediaPlayerCustomDataProvider*__C provider;
-} agora__media__base__MediaSource__C;
+} agora_media_base__MediaSource__C;
 
 
-typedef struct agora__commons__LogConfig__C
+typedef struct agora_commons__LogConfig__C
 {
   char const* filePath;
 uint32_t__C fileSizeInKB;
 agora__commons__LOG_LEVEL__C level;
-} agora__commons__LogConfig__C;
+} agora_commons__LogConfig__C;
 
 
-typedef struct agora__rtc__InputSeiData__C
+typedef struct agora_rtc__InputSeiData__C
 {
   int32_t__C type;
 int64_t__C timestamp;
 int64_t__C frame_index;
 uint8_t*__C private_data;
 int32_t__C data_size;
-} agora__rtc__InputSeiData__C;
+} agora_rtc__InputSeiData__C;
 
 
-typedef struct agora__rtc__MusicChartInfo__C
+typedef struct agora_rtc__MusicChartInfo__C
 {
   char const* chartName;
 int32_t__C id;
-} agora__rtc__MusicChartInfo__C;
+} agora_rtc__MusicChartInfo__C;
 
 
-typedef struct agora__rtc__MusicCacheInfo__C
+typedef struct agora_rtc__MusicCacheInfo__C
 {
   int64_t__C songCode;
 agora__rtc__MUSIC_CACHE_STATUS_TYPE__C status;
-} agora__rtc__MusicCacheInfo__C;
+} agora_rtc__MusicCacheInfo__C;
 
 
-typedef struct agora__rtc__MvProperty__C
+typedef struct agora_rtc__MvProperty__C
 {
   char const* resolution;
 char const* bandwidth;
-} agora__rtc__MvProperty__C;
+} agora_rtc__MvProperty__C;
 
 
-typedef struct agora__rtc__ClimaxSegment__C
+typedef struct agora_rtc__ClimaxSegment__C
 {
   int32_t__C startTimeMs;
 int32_t__C endTimeMs;
-} agora__rtc__ClimaxSegment__C;
+} agora_rtc__ClimaxSegment__C;
 
 
-typedef struct agora__rtc__Music__C
+typedef struct agora_rtc__Music__C
 {
   int64_t__C songCode;
 char const* name;
@@ -892,10 +892,10 @@ int32_t__C climaxSegmentCount;
 agora__rtc__ClimaxSegment*__C climaxSegmentList;
 int32_t__C mvPropertyCount;
 agora__rtc__MvProperty*__C mvPropertyList;
-} agora__rtc__Music__C;
+} agora_rtc__Music__C;
 
 
-typedef struct agora__rtc__MusicContentCenterConfiguration__C
+typedef struct agora_rtc__MusicContentCenterConfiguration__C
 {
   char const* appId;
 char const* token;
@@ -903,17 +903,17 @@ int64_t__C mccUid;
 int32_t__C maxCacheSize;
 char const* mccDomain;
 agora__rtc__IMusicContentCenterEventHandler*__C eventHandler;
-} agora__rtc__MusicContentCenterConfiguration__C;
+} agora_rtc__MusicContentCenterConfiguration__C;
 
 
-typedef struct agora__rtc__AgoraRhythmPlayerConfig__C
+typedef struct agora_rtc__AgoraRhythmPlayerConfig__C
 {
   int beatsPerMeasure;
 int beatsPerMinute;
-} agora__rtc__AgoraRhythmPlayerConfig__C;
+} agora_rtc__AgoraRhythmPlayerConfig__C;
 
 
-typedef struct agora__rtc__LocalVideoStats__C
+typedef struct agora_rtc__LocalVideoStats__C
 {
   agora__rtc__uid_t__C uid;
 int sentBitrate;
@@ -938,10 +938,10 @@ unsigned short txPacketLossRate;
 agora__rtc__CAPTURE_BRIGHTNESS_LEVEL_TYPE__C captureBrightnessLevel;
 bool dualStreamEnabled;
 int hwEncoderAccelerating;
-} agora__rtc__LocalVideoStats__C;
+} agora_rtc__LocalVideoStats__C;
 
 
-typedef struct agora__rtc__RemoteAudioStats__C
+typedef struct agora_rtc__RemoteAudioStats__C
 {
   agora__rtc__uid_t__C uid;
 int quality;
@@ -961,10 +961,10 @@ int publishDuration;
 int qoeQuality;
 int qualityChangedReason;
 unsigned int rxAudioBytes;
-} agora__rtc__RemoteAudioStats__C;
+} agora_rtc__RemoteAudioStats__C;
 
 
-typedef struct agora__rtc__RemoteVideoStats__C
+typedef struct agora_rtc__RemoteVideoStats__C
 {
   agora__rtc__uid_t__C uid;
 int delay;
@@ -984,10 +984,10 @@ int totalActiveTime;
 int publishDuration;
 int mosValue;
 unsigned int rxVideoBytes;
-} agora__rtc__RemoteVideoStats__C;
+} agora_rtc__RemoteVideoStats__C;
 
 
-typedef struct agora__rtc__VideoCompositingLayout__C
+typedef struct agora_rtc__VideoCompositingLayout__C
 {
   int canvasWidth;
 int canvasHeight;
@@ -996,10 +996,10 @@ agora__rtc__VideoCompositingLayout__Region const*__C regions;
 int regionCount;
 char const* appData;
 int appDataLength;
-} agora__rtc__VideoCompositingLayout__C;
+} agora_rtc__VideoCompositingLayout__C;
 
 
-typedef struct agora__rtc__Region__C
+typedef struct agora_rtc__Region__C
 {
   agora__rtc__uid_t__C uid;
 double x;
@@ -1009,10 +1009,10 @@ double height;
 int zOrder;
 double alpha;
 media__base__RENDER_MODE_TYPE__C renderMode;
-} agora__rtc__Region__C;
+} agora_rtc__Region__C;
 
 
-typedef struct agora__rtc__InjectStreamConfig__C
+typedef struct agora_rtc__InjectStreamConfig__C
 {
   int width;
 int height;
@@ -1022,10 +1022,10 @@ int videoBitrate;
 agora__rtc__AUDIO_SAMPLE_RATE_TYPE__C audioSampleRate;
 int audioBitrate;
 int audioChannels;
-} agora__rtc__InjectStreamConfig__C;
+} agora_rtc__InjectStreamConfig__C;
 
 
-typedef struct agora__rtc__PublisherConfiguration__C
+typedef struct agora_rtc__PublisherConfiguration__C
 {
   int width;
 int height;
@@ -1040,19 +1040,19 @@ char const* injectStreamUrl;
 char const* publishUrl;
 char const* rawStreamUrl;
 char const* extraInfo;
-} agora__rtc__PublisherConfiguration__C;
+} agora_rtc__PublisherConfiguration__C;
 
 
-typedef struct agora__rtc__CameraCapturerConfiguration__C
+typedef struct agora_rtc__CameraCapturerConfiguration__C
 {
   agora__rtc__CAMERA_DIRECTION__C cameraDirection;
 char[512] deviceId;
 agora__rtc__VideoFormat__C format;
 bool followEncodeDimensionRatio;
-} agora__rtc__CameraCapturerConfiguration__C;
+} agora_rtc__CameraCapturerConfiguration__C;
 
 
-typedef struct agora__rtc__ScreenCaptureConfiguration__C
+typedef struct agora_rtc__ScreenCaptureConfiguration__C
 {
   bool isCaptureWindow;
 uint32_t__C displayId;
@@ -1060,26 +1060,26 @@ agora__rtc__Rectangle__C screenRect;
 agora__view_t__C windowId;
 agora__rtc__ScreenCaptureParameters__C params;
 agora__rtc__Rectangle__C regionRect;
-} agora__rtc__ScreenCaptureConfiguration__C;
+} agora_rtc__ScreenCaptureConfiguration__C;
 
 
-typedef struct agora__rtc__SIZE__C
+typedef struct agora_rtc__SIZE__C
 {
   int width;
 int height;
-} agora__rtc__SIZE__C;
+} agora_rtc__SIZE__C;
 
 
-typedef struct agora__rtc__ThumbImageBuffer__C
+typedef struct agora_rtc__ThumbImageBuffer__C
 {
   char const* buffer;
 unsigned int length;
 unsigned int width;
 unsigned int height;
-} agora__rtc__ThumbImageBuffer__C;
+} agora_rtc__ThumbImageBuffer__C;
 
 
-typedef struct agora__rtc__ScreenCaptureSourceInfo__C
+typedef struct agora_rtc__ScreenCaptureSourceInfo__C
 {
   agora__rtc__ScreenCaptureSourceType__C type;
 agora__view_t__C sourceId;
@@ -1093,24 +1093,24 @@ bool isOccluded;
 agora__rtc__Rectangle__C position;
 bool minimizeWindow;
 agora__view_t__C sourceDisplayId;
-} agora__rtc__ScreenCaptureSourceInfo__C;
+} agora_rtc__ScreenCaptureSourceInfo__C;
 
 
-typedef struct agora__rtc__AdvancedAudioOptions__C
+typedef struct agora_rtc__AdvancedAudioOptions__C
 {
   Optional<int>__C audioProcessingChannels;
-} agora__rtc__AdvancedAudioOptions__C;
+} agora_rtc__AdvancedAudioOptions__C;
 
 
-typedef struct agora__rtc__ImageTrackOptions__C
+typedef struct agora_rtc__ImageTrackOptions__C
 {
   char const* imageUrl;
 int fps;
 agora__rtc__VIDEO_MIRROR_MODE_TYPE__C mirrorMode;
-} agora__rtc__ImageTrackOptions__C;
+} agora_rtc__ImageTrackOptions__C;
 
 
-typedef struct agora__rtc__ChannelMediaOptions__C
+typedef struct agora_rtc__ChannelMediaOptions__C
 {
   Optional<bool>__C publishCameraTrack;
 Optional<bool>__C publishSecondaryCameraTrack;
@@ -1146,18 +1146,18 @@ Optional<bool>__C publishRhythmPlayerTrack;
 Optional<bool>__C isInteractiveAudience;
 Optional<agora__rtc__video_track_id_t>__C customVideoTrackId;
 Optional<bool>__C isAudioFilterable;
-} agora__rtc__ChannelMediaOptions__C;
+} agora_rtc__ChannelMediaOptions__C;
 
 
-typedef struct agora__rtc__LeaveChannelOptions__C
+typedef struct agora_rtc__LeaveChannelOptions__C
 {
   bool stopAudioMixing;
 bool stopAllEffect;
 bool stopMicrophoneRecording;
-} agora__rtc__LeaveChannelOptions__C;
+} agora_rtc__LeaveChannelOptions__C;
 
 
-typedef struct agora__rtc__RtcEngineContext__C
+typedef struct agora_rtc__RtcEngineContext__C
 {
   agora__rtc__IRtcEngineEventHandler*__C eventHandler;
 char const* appId;
@@ -1171,29 +1171,29 @@ Optional<agora__rtc__THREAD_PRIORITY_TYPE>__C threadPriority;
 bool useExternalEglContext;
 bool domainLimit;
 bool autoRegisterAgoraExtensions;
-} agora__rtc__RtcEngineContext__C;
+} agora_rtc__RtcEngineContext__C;
 
 
-typedef struct agora__rtc__Metadata__C
+typedef struct agora_rtc__Metadata__C
 {
   unsigned int uid;
 unsigned int size;
 unsigned char* buffer;
 long long timeStampMs;
-} agora__rtc__Metadata__C;
+} agora_rtc__Metadata__C;
 
 
-typedef struct agora__rtc__DirectCdnStreamingStats__C
+typedef struct agora_rtc__DirectCdnStreamingStats__C
 {
   int videoWidth;
 int videoHeight;
 int fps;
 int videoBitrate;
 int audioBitrate;
-} agora__rtc__DirectCdnStreamingStats__C;
+} agora_rtc__DirectCdnStreamingStats__C;
 
 
-typedef struct agora__rtc__DirectCdnStreamingMediaOptions__C
+typedef struct agora_rtc__DirectCdnStreamingMediaOptions__C
 {
   Optional<bool>__C publishCameraTrack;
 Optional<bool>__C publishMicrophoneTrack;
@@ -1202,33 +1202,33 @@ Optional<bool>__C publishCustomVideoTrack;
 Optional<bool>__C publishMediaPlayerAudioTrack;
 Optional<int>__C publishMediaPlayerId;
 Optional<agora__rtc__video_track_id_t>__C customVideoTrackId;
-} agora__rtc__DirectCdnStreamingMediaOptions__C;
+} agora_rtc__DirectCdnStreamingMediaOptions__C;
 
 
-typedef struct agora__rtc__ExtensionInfo__C
+typedef struct agora_rtc__ExtensionInfo__C
 {
   agora__media__MEDIA_SOURCE_TYPE__C mediaSourceType;
 agora__rtc__uid_t__C remoteUid;
 char const* channelId;
 agora__rtc__uid_t__C localUid;
-} agora__rtc__ExtensionInfo__C;
+} agora_rtc__ExtensionInfo__C;
 
 
-typedef struct agora__rtc__RtcConnection__C
+typedef struct agora_rtc__RtcConnection__C
 {
   char const* channelId;
 agora__rtc__uid_t__C localUid;
-} agora__rtc__RtcConnection__C;
+} agora_rtc__RtcConnection__C;
 
 
-typedef struct agora__rtc__RemoteVoicePositionInfo__C
+typedef struct agora_rtc__RemoteVoicePositionInfo__C
 {
   float[3] position;
 float[3] forward;
-} agora__rtc__RemoteVoicePositionInfo__C;
+} agora_rtc__RemoteVoicePositionInfo__C;
 
 
-typedef struct agora__rtc__SpatialAudioZone__C
+typedef struct agora_rtc__SpatialAudioZone__C
 {
   int zoneSetId;
 float[3] position;
@@ -1239,13 +1239,13 @@ float forwardLength;
 float rightLength;
 float upLength;
 float audioAttenuation;
-} agora__rtc__SpatialAudioZone__C;
+} agora_rtc__SpatialAudioZone__C;
 
 
-typedef struct agora__rtc__LocalSpatialAudioConfig__C
+typedef struct agora_rtc__LocalSpatialAudioConfig__C
 {
   agora__rtc__IRtcEngine*__C rtcEngine;
-} agora__rtc__LocalSpatialAudioConfig__C;
+} agora_rtc__LocalSpatialAudioConfig__C;
 
 typedef enum agora__CHANNEL_PROFILE_TYPE__C
 {

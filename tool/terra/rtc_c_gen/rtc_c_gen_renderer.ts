@@ -21,7 +21,7 @@ function checkPropertyEq(obj: any, key: string, value: any): boolean {
 }
 
 function checkObjInclude(obj1: any, obj2: any): boolean {
-  let isIncluded = false;
+  let isIncluded = true;
 
   if (!obj2) {
     return isIncluded;
@@ -52,6 +52,36 @@ const nodesToRemove = [
     __TYPE: CXXTYPE.Clazz,
     name: "AutoPtr",
   },
+  {
+    __TYPE: CXXTYPE.Clazz,
+    name: "CopyableAutoPtr",
+  },
+
+  {
+    __TYPE: CXXTYPE.Clazz,
+    name: "IIterator",
+  },
+
+  {
+    __TYPE: CXXTYPE.Clazz,
+    name: "IContainer",
+  },
+
+  {
+    __TYPE: CXXTYPE.Clazz,
+    name: "AOutputIterator",
+  },
+
+  {
+    __TYPE: CXXTYPE.Clazz,
+    name: "AList",
+  },
+
+  {
+    __TYPE: CXXTYPE.Clazz,
+    name: "AList",
+  },
+
 ];
 
 const stdIntTypes = [

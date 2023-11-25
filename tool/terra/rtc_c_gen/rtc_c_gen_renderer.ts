@@ -3,8 +3,11 @@ import {
   CXXTYPE,
   CXXTerraNode,
   Clazz,
+  Constructor,
+  EnumConstant,
   Enumz,
   MemberFunction,
+  MemberVariable,
   SimpleType,
   SimpleTypeKind,
   Struct,
@@ -17,7 +20,17 @@ import {
 } from "@agoraio-extensions/terra-core";
 
 function checkPropertyEq(obj: any, key: string, value: any): boolean {
-  return obj.hasOwnProperty(key) && obj[key] == value;
+  if (!obj.hasOwnProperty(key)) {
+    return false;
+  }
+
+  let eq = obj[key] == value;
+
+  if (!eq && typeof value === "string") {
+    eq = new RegExp(value).test(obj[key]);
+  }
+
+  return eq;
 }
 
 function checkObjInclude(obj1: any, obj2: any): boolean {
@@ -44,17 +57,25 @@ function checkObjInclude(obj1: any, obj2: any): boolean {
 
 const nodesToRemove = [
   {
-    __TYPE: CXXTYPE.CXXFile,
-    file_path:
-      "/Users/fenglang/codes/aw/Agora-Flutter-SDK/tool/terra/.terra/cxx_parser/preProcess@a515187e1caea35c4bdaaf7c85859b00/AgoraBase.h",
-  },
-  {
     __TYPE: CXXTYPE.Clazz,
     name: "AutoPtr",
   },
   {
     __TYPE: CXXTYPE.Clazz,
     name: "CopyableAutoPtr",
+  },
+
+  {
+    __TYPE: CXXTYPE.TypeAlias,
+    parent_name: "AutoPtr",
+  },
+  {
+    __TYPE: CXXTYPE.TypeAlias,
+    parent_name: "CopyableAutoPtr",
+  },
+  {
+    __TYPE: CXXTYPE.TypeAlias,
+    parent_name: "AOutputIterator",
   },
 
   {
@@ -76,10 +97,26 @@ const nodesToRemove = [
     __TYPE: CXXTYPE.Clazz,
     name: "AList",
   },
-
+  {
+    __TYPE: CXXTYPE.TypeAlias,
+    parent_name: "AList",
+  },
   {
     __TYPE: CXXTYPE.Clazz,
-    name: "AList",
+    name: "IString",
+  },
+  {
+    __TYPE: CXXTYPE.TypeAlias,
+    name: "AString",
+  },
+  {
+    __TYPE: CXXTYPE.Clazz,
+    name: "IRhythmPlayer",
+  },
+
+  {
+    __TYPE: CXXTYPE.MemberFunction,
+    name: "getRhythmPlayerTrack",
   },
 
 ];
@@ -180,20 +217,28 @@ function cStructName(fullName: string): string {
 
 const templateAsPointer = ["agora_refptr", "Optional"];
 
+const renameType = new Map([
+  ["util::AString", "char *"],
+  ["agora::util::AString&", "char *"],
+]);
+
+
+
 function toCNameWithType(
   parseResult: ParseResult,
   type: SimpleType,
+  appendName: string = '',
   cnameSurffix: string = "C"
 ): string {
-  if (type.is_builtin_type || isStdIntType(type.name)) {
-    return type.source;
-  }
+
 
   let node = parseResult.resolveNodeByType(type);
 
   let isConst = type.is_const;
   let isPointer = type.kind == SimpleTypeKind.pointer_t;
   let isRef = type.kind == SimpleTypeKind.reference_t;
+  let isNeedAppendName = appendName.length > 0;
+  console.log(`appendName: ${appendName}, isNeedAppendName: ${isNeedAppendName}`);
 
   let suffix = node.__TYPE == CXXTYPE.Clazz ? "Handle" : cnameSurffix;
 
@@ -218,6 +263,11 @@ function toCNameWithType(
       ) {
         isPointer = true;
       }
+    } else if (typeNode.kind == SimpleTypeKind.array_t) {
+      cName = `${typeNode.name} ${appendName}[${typeNode.lenOfArrayType()}]`;
+      isNeedAppendName = false;
+    } else if (type.is_builtin_type || isStdIntType(type.name)) {
+      cName = typeNode.name;
     }
   } else {
     cName = toCName(node, suffix);
@@ -233,7 +283,17 @@ function toCNameWithType(
     cName = `${cName}&`;
   }
 
-  return cName;
+  if (renameType.has(cName)) {
+    cName = renameType.get(cName)!;
+  }
+
+  if (isNeedAppendName) {
+    cName = `${cName} ${appendName}`;
+  }
+
+
+
+    return cName;
 }
 
 function toCName(node: CXXTerraNode, cnameSurffix: string = "C"): string {
@@ -281,9 +341,9 @@ function toCHandle(clazz: Clazz): string {
 
 // }
 
-function cppTypeAlias2CTypeAlias(typeAlias: TypeAlias): string {
+function cppTypeAlias2CTypeAlias(parseResult: ParseResult, typeAlias: TypeAlias): string {
   let name = toCName(typeAlias);
-  let type = typeAlias.underlyingType.source;
+  let type = toCNameWithType(parseResult, typeAlias.underlyingType);;
   // e.g., typedef unsigned int uid_t
   return `typedef ${type} ${name};`;
 }
@@ -292,15 +352,16 @@ function cppStruct2CStruct(parseResult: ParseResult, structt: Struct): string {
   let structName = toCName(structt);
   let structContent = "";
   let mvs = structt.member_variables.map((it) => {
-    let type = toCNameWithType(parseResult, it.type);
-    let name = it.name;
+    // let type = toCNameWithType(parseResult, it.type, name);
+    // let name = it.name;
     // if (it.type.is_builtin_type || isStdIntType(it.type.name)) {
     //     type = it.type.source;
     // } else {
     //     type = toCName(it.type);
     // }
 
-    return `${type} ${name};`;
+    // return `${type} ${name};`;
+    return `${toCNameWithType(parseResult, it.type, it.name)};`;
   });
   structContent = mvs.join("\n");
   return cStructTemplate
@@ -341,7 +402,7 @@ function cppClass2CFunctions(parseResult: ParseResult, clazz: Clazz): string {
       let functionName = toCName(clazz, it.name);
       let returnType = toCNameWithType(parseResult, it.return_type);
       let args = it.parameters.map(
-        (it) => `${toCNameWithType(parseResult, it.type)} ${it.name}`
+        (it) => toCNameWithType(parseResult, it.type, it.name)
       );
       args = [`${nativeHandleName} handle`, ...args];
       return `${returnType} ${functionName}(${args.join(",")});`;
@@ -376,16 +437,46 @@ function preProcessParseResult(parseResult: ParseResult): ParseResult {
   );
 
   parseResult.nodes.forEach((it) => {
-    // filter Clazz
 
-    // filter Struct
-
-    // filter Enumz
-
+    // Handle the parent nodes
     (it as CXXFile).nodes = filterNodes(
       (it as CXXFile).nodes,
       nodesToRemove.filter((node) => node.__TYPE != CXXTYPE.CXXFile)
     );
+
+    // Handle the children nodes
+    (it as CXXFile).nodes.forEach((it) => {
+      // filter Clazz
+      // filter Struct
+      if (it.__TYPE == CXXTYPE.Struct || it.__TYPE == CXXTYPE.Clazz) {
+        // The Struct is the sub class of Clazz
+        let node = it as Clazz;
+
+        node.constructors = filterNodes(
+          node.constructors,
+          nodesToRemove.filter((node) => node.__TYPE == CXXTYPE.Constructor)
+        ) as Constructor[];
+
+        node.methods = filterNodes(
+          node.methods,
+          nodesToRemove.filter((node) => node.__TYPE == CXXTYPE.MemberFunction)
+        ) as MemberFunction[];
+
+        node.member_variables = filterNodes(
+          node.member_variables,
+          nodesToRemove.filter((node) => node.__TYPE == CXXTYPE.MemberVariable)
+        ) as MemberVariable[];
+      } else if (it.__TYPE == CXXTYPE.Enumz) {
+        // filter Enumz
+        let node = it as Enumz;
+        node.enum_constants = filterNodes(
+          node.enum_constants,
+          nodesToRemove.filter((node) => node.__TYPE == CXXTYPE.EnumConstant)
+        ) as EnumConstant[];
+      }
+
+
+    });
   });
 
   // Rename types
@@ -423,7 +514,7 @@ export default function RtcCRenderer(
     .map((it) => {
       switch (it.__TYPE) {
         case CXXTYPE.TypeAlias:
-          return cppTypeAlias2CTypeAlias(it as TypeAlias);
+          return cppTypeAlias2CTypeAlias(parseResult, it as TypeAlias);
         case CXXTYPE.Struct:
           return cppStruct2CStruct(parseResult, it as Struct);
         case CXXTYPE.Enumz:

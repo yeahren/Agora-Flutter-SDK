@@ -16,5 +16,8 @@ parsers:
           - '@agoraio-extensions/terra_shared_configs:headers/rtc_4.2.3/include/IAgoraMediaComponentFactory.h'
           - '@agoraio-extensions/terra_shared_configs:headers/rtc_4.2.3/include/IAgoraParameter.h'
 
+  - name: OrderNodeParser
+    package: '@agoraio-extensions/terra_shared_configs'
+
 renderers:
   - path: rtc_c_gen/rtc_c_gen_renderer.ts

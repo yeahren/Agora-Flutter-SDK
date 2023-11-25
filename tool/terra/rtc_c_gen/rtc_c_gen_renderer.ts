@@ -6,6 +6,7 @@ import {
   Constructor,
   EnumConstant,
   Enumz,
+  IncludeDirective,
   MemberFunction,
   MemberVariable,
   SimpleType,
@@ -19,6 +20,8 @@ import {
   RenderResult,
   TerraNode,
 } from "@agoraio-extensions/terra-core";
+
+import path from "path";
 
 function checkPropertyEq(obj: any, key: string, value: any): boolean {
   if (!obj.hasOwnProperty(key)) {
@@ -343,6 +346,16 @@ function toCHandle(clazz: Clazz): string {
 
 // }
 
+function cppIncludeDirective2C(parseResult: ParseResult, includeDirective: IncludeDirective): string {
+  if (!parseResult.nodes.find((it) => path.basename((it as CXXFile).file_path) ==
+    path.basename(includeDirective.include_file_path))) {
+    return '';
+  }
+
+  let fileName = path.basename(includeDirective.include_file_path).replace('.h', '');
+  return `#include "${fileName}_C.h"`;
+}
+
 function cppTypeAlias2CTypeAlias(parseResult: ParseResult, typeAlias: TypeAlias): string {
   let name = toCName(typeAlias);
   let type = toCNameWithType(parseResult, typeAlias.underlyingType);;
@@ -555,6 +568,56 @@ function reorderNodes(parseResult: ParseResult, nodes: CXXTerraNode[]): CXXTerra
   return newNodes;
 }
 
+function cpp2c(parseResult: ParseResult, cxxFile: CXXFile): RenderResult {
+  let allNodes = cxxFile.nodes;
+
+  let output = '';
+  output = allNodes
+    .map((it) => {
+      switch (it.__TYPE) {
+        case CXXTYPE.TypeAlias:
+          return cppTypeAlias2CTypeAlias(parseResult, it as TypeAlias);
+        case CXXTYPE.Struct:
+          return cppStruct2CStruct(parseResult, it as Struct);
+        case CXXTYPE.Enumz:
+          return cppEnum2CEnum(it as Enumz);
+        case CXXTYPE.Clazz:
+          return cppClass2CFunctions(parseResult, it as Clazz);
+        case CXXTYPE.IncludeDirective:
+          return cppIncludeDirective2C(parseResult, it as IncludeDirective);
+        default:
+          return "";
+      }
+    })
+    .join("\n");
+
+  let fileName = cxxFile.fileName.replace('.h', '');
+  let defineH = `${fileName.toUpperCase()}_C_H_`;
+
+  output = `
+    #ifndef ${defineH}
+    #define ${defineH}
+    
+    #include <stdint.h>
+    #include <stddef.h>
+    
+    
+    
+    ${output}
+    
+    #endif// ${defineH}
+    `;
+
+
+
+
+
+  return {
+    file_name: `${fileName}_C.h`,
+    file_content: output,
+  };
+}
+
 export default function RtcCRenderer(
   terraContext: TerraContext,
   args: any,
@@ -562,11 +625,13 @@ export default function RtcCRenderer(
 ): RenderResult[] {
   let output = "";
 
-  let allNodes = (preProcessParseResult(parseResult).nodes as CXXFile[])
-    .map((it) => it.nodes)
-    .flat();
+  preProcessParseResult(parseResult);
 
-  allNodes = reorderNodes(parseResult, allNodes);
+  // let allNodes = (preProcessParseResult(parseResult).nodes as CXXFile[])
+  //   .map((it) => it.nodes)
+  //   .flat();
+
+  // allNodes = reorderNodes(parseResult, allNodes);
 
   // let allTypeAlias =
   //     allNodes.filter((it) => it.__TYPE == CXXTYPE.TypeAlias);
@@ -583,41 +648,38 @@ export default function RtcCRenderer(
   // let allCEnumList = allEnums.map((it) => cppEnum2CEnum(it as Enumz));
   // output += allCEnumList.join('\n');
 
-  output = allNodes
-    .map((it) => {
-      switch (it.__TYPE) {
-        case CXXTYPE.TypeAlias:
-          return cppTypeAlias2CTypeAlias(parseResult, it as TypeAlias);
-        case CXXTYPE.Struct:
-          return cppStruct2CStruct(parseResult, it as Struct);
-        case CXXTYPE.Enumz:
-          return cppEnum2CEnum(it as Enumz);
-        case CXXTYPE.Clazz:
-          return cppClass2CFunctions(parseResult, it as Clazz);
-        default:
-          return "";
-      }
-    })
-    .join("\n");
+  //   output = allNodes
+  //     .map((it) => {
+  //       switch (it.__TYPE) {
+  //         case CXXTYPE.TypeAlias:
+  //           return cppTypeAlias2CTypeAlias(parseResult, it as TypeAlias);
+  //         case CXXTYPE.Struct:
+  //           return cppStruct2CStruct(parseResult, it as Struct);
+  //         case CXXTYPE.Enumz:
+  //           return cppEnum2CEnum(it as Enumz);
+  //         case CXXTYPE.Clazz:
+  //           return cppClass2CFunctions(parseResult, it as Clazz);
+  //         default:
+  //           return "";
+  //       }
+  //     })
+  //     .join("\n");
 
-  output = `
-#ifndef AGORA_RTC_C_H_
-#define AGORA_RTC_C_H_
+  //   output = `
+  // #ifndef AGORA_RTC_C_H_
+  // #define AGORA_RTC_C_H_
 
-#include <stdint.h>
-#include <stddef.h>
+  // #include <stdint.h>
+  // #include <stddef.h>
 
-typedef void* base__IAgoraService__Handle;
+  // typedef void* base__IAgoraService__Handle;
 
-${output}
+  // ${output}
 
-#endif// AGORA_RTC_C_H_
-`;
+  // #endif// AGORA_RTC_C_H_
+  // `;
 
-  return [
-    {
-      file_name: "rtc_c.h",
-      file_content: output,
-    },
-  ];
+
+
+  return parseResult.nodes.map((it) => cpp2c(parseResult, it as CXXFile));
 }

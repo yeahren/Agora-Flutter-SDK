@@ -1,0 +1,94 @@
+
+    #ifndef IAGORAMEDIASTREAMINGSOURCE_C_H_
+    #define IAGORAMEDIASTREAMINGSOURCE_C_H_
+    
+    #include <stdint.h>
+    #include <stddef.h>
+    
+    
+    
+    #include "AgoraBase_C.h"
+#include "AgoraMediaBase_C.h"
+#include "AgoraMediaPlayerTypes_C.h"
+
+
+typedef enum agora_rtc__STREAMING_SRC_ERR__C
+{
+  STREAMING_SRC_ERR_NONE= 0,
+STREAMING_SRC_ERR_UNKNOWN= 1,
+STREAMING_SRC_ERR_INVALID_PARAM= 2,
+STREAMING_SRC_ERR_BAD_STATE= 3,
+STREAMING_SRC_ERR_NO_MEM= 4,
+STREAMING_SRC_ERR_BUFFER_OVERFLOW= 5,
+STREAMING_SRC_ERR_BUFFER_UNDERFLOW= 6,
+STREAMING_SRC_ERR_NOT_FOUND= 7,
+STREAMING_SRC_ERR_TIMEOUT= 8,
+STREAMING_SRC_ERR_EXPIRED= 9,
+STREAMING_SRC_ERR_UNSUPPORTED= 10,
+STREAMING_SRC_ERR_NOT_EXIST= 11,
+STREAMING_SRC_ERR_EXIST= 12,
+STREAMING_SRC_ERR_OPEN= 13,
+STREAMING_SRC_ERR_CLOSE= 14,
+STREAMING_SRC_ERR_READ= 15,
+STREAMING_SRC_ERR_WRITE= 16,
+STREAMING_SRC_ERR_SEEK= 17,
+STREAMING_SRC_ERR_EOF= 18,
+STREAMING_SRC_ERR_CODECOPEN= 19,
+STREAMING_SRC_ERR_CODECCLOSE= 20,
+STREAMING_SRC_ERR_CODECPROC= 21,
+} agora_rtc__STREAMING_SRC_ERR__C;
+
+
+typedef enum agora_rtc__STREAMING_SRC_STATE__C
+{
+  STREAMING_SRC_STATE_CLOSED= 0,
+STREAMING_SRC_STATE_OPENING= 1,
+STREAMING_SRC_STATE_IDLE= 2,
+STREAMING_SRC_STATE_PLAYING= 3,
+STREAMING_SRC_STATE_SEEKING= 4,
+STREAMING_SRC_STATE_EOF= 5,
+STREAMING_SRC_STATE_ERROR= 6,
+} agora_rtc__STREAMING_SRC_STATE__C;
+
+
+typedef struct agora_rtc__InputSeiData__C
+{
+  int32_t type;
+int64_t timestamp;
+int64_t frame_index;
+uint8_t* private_data;
+int32_t data_size;
+} agora_rtc__InputSeiData__C;
+
+typedef void* agora_rtc__IMediaStreamingSource__Handle;
+
+int agora_rtc__IMediaStreamingSource__open(agora_rtc__IMediaStreamingSource__Handle handle,const char* url,int64_t start_pos,bool auto_play);
+int agora_rtc__IMediaStreamingSource__close(agora_rtc__IMediaStreamingSource__Handle handle);
+int agora_rtc__IMediaStreamingSource__getSourceId(agora_rtc__IMediaStreamingSource__Handle handle);
+bool agora_rtc__IMediaStreamingSource__isVideoValid(agora_rtc__IMediaStreamingSource__Handle handle);
+bool agora_rtc__IMediaStreamingSource__isAudioValid(agora_rtc__IMediaStreamingSource__Handle handle);
+int agora_rtc__IMediaStreamingSource__getDuration(agora_rtc__IMediaStreamingSource__Handle handle,int64_t& duration);
+int agora_rtc__IMediaStreamingSource__getStreamCount(agora_rtc__IMediaStreamingSource__Handle handle,int64_t& count);
+int agora_rtc__IMediaStreamingSource__getStreamInfo(agora_rtc__IMediaStreamingSource__Handle handle,int64_t index,agora_media_base__PlayerStreamInfo__C* out_info);
+int agora_rtc__IMediaStreamingSource__setLoopCount(agora_rtc__IMediaStreamingSource__Handle handle,int64_t loop_count);
+int agora_rtc__IMediaStreamingSource__play(agora_rtc__IMediaStreamingSource__Handle handle);
+int agora_rtc__IMediaStreamingSource__pause(agora_rtc__IMediaStreamingSource__Handle handle);
+int agora_rtc__IMediaStreamingSource__stop(agora_rtc__IMediaStreamingSource__Handle handle);
+int agora_rtc__IMediaStreamingSource__seek(agora_rtc__IMediaStreamingSource__Handle handle,int64_t new_pos);
+int agora_rtc__IMediaStreamingSource__getCurrPosition(agora_rtc__IMediaStreamingSource__Handle handle,int64_t& pos);
+agora_rtc__STREAMING_SRC_STATE__C agora_rtc__IMediaStreamingSource__getCurrState(agora_rtc__IMediaStreamingSource__Handle handle);
+int agora_rtc__IMediaStreamingSource__appendSeiData(agora_rtc__IMediaStreamingSource__Handle handle,const agora_rtc__InputSeiData__C& inSeiData);
+int agora_rtc__IMediaStreamingSource__registerObserver(agora_rtc__IMediaStreamingSource__Handle handle,agora_rtc__IMediaStreamingSourceObserver__Handle* observer);
+int agora_rtc__IMediaStreamingSource__unregisterObserver(agora_rtc__IMediaStreamingSource__Handle handle,agora_rtc__IMediaStreamingSourceObserver__Handle* observer);
+int agora_rtc__IMediaStreamingSource__parseMediaInfo(agora_rtc__IMediaStreamingSource__Handle handle,const char* url,agora_media_base__PlayerStreamInfo__C& video_info,agora_media_base__PlayerStreamInfo__C& audio_info);
+typedef void* agora_rtc__IMediaStreamingSourceObserver__Handle;
+
+void agora_rtc__IMediaStreamingSourceObserver__onStateChanged(agora_rtc__IMediaStreamingSourceObserver__Handle handle,agora_rtc__STREAMING_SRC_STATE__C state,agora_rtc__STREAMING_SRC_ERR__C err_code);
+void agora_rtc__IMediaStreamingSourceObserver__onOpenDone(agora_rtc__IMediaStreamingSourceObserver__Handle handle,agora_rtc__STREAMING_SRC_ERR__C err_code);
+void agora_rtc__IMediaStreamingSourceObserver__onSeekDone(agora_rtc__IMediaStreamingSourceObserver__Handle handle,agora_rtc__STREAMING_SRC_ERR__C err_code);
+void agora_rtc__IMediaStreamingSourceObserver__onEofOnce(agora_rtc__IMediaStreamingSourceObserver__Handle handle,int64_t progress_ms,int64_t repeat_count);
+void agora_rtc__IMediaStreamingSourceObserver__onProgress(agora_rtc__IMediaStreamingSourceObserver__Handle handle,int64_t position_ms);
+void agora_rtc__IMediaStreamingSourceObserver__onMetaData(agora_rtc__IMediaStreamingSourceObserver__Handle handle,const void* data,int length);
+    
+    #endif// IAGORAMEDIASTREAMINGSOURCE_C_H_
+    

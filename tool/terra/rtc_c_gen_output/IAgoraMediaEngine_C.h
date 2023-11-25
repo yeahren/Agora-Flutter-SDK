@@ -1,0 +1,42 @@
+
+    #ifndef IAGORAMEDIAENGINE_C_H_
+    #define IAGORAMEDIAENGINE_C_H_
+    
+    #include <stdint.h>
+    #include <stddef.h>
+    
+    
+    
+    #include "AgoraBase_C.h"
+#include "AgoraMediaBase_C.h"
+
+
+typedef enum agora_media__AUDIO_MIXING_DUAL_MONO_MODE__C
+{
+  AUDIO_MIXING_DUAL_MONO_AUTO= 0,
+AUDIO_MIXING_DUAL_MONO_L= 1,
+AUDIO_MIXING_DUAL_MONO_R= 2,
+AUDIO_MIXING_DUAL_MONO_MIX= 3,
+} agora_media__AUDIO_MIXING_DUAL_MONO_MODE__C;
+
+typedef void* agora_media__IMediaEngine__Handle;
+
+int agora_media__IMediaEngine__registerAudioFrameObserver(agora_media__IMediaEngine__Handle handle,agora_media__IAudioFrameObserver__Handle* observer);
+int agora_media__IMediaEngine__registerVideoFrameObserver(agora_media__IMediaEngine__Handle handle,agora_media_base__IVideoFrameObserver__Handle* observer);
+int agora_media__IMediaEngine__registerVideoEncodedFrameObserver(agora_media__IMediaEngine__Handle handle,agora_media__IVideoEncodedFrameObserver__Handle* observer);
+int agora_media__IMediaEngine__pushAudioFrame(agora_media__IMediaEngine__Handle handle,agora_media__AudioFrame__C* frame,agora_rtc__track_id_t__C trackId);
+int agora_media__IMediaEngine__pullAudioFrame(agora_media__IMediaEngine__Handle handle,agora_media__AudioFrame__C* frame);
+int agora_media__IMediaEngine__setExternalVideoSource(agora_media__IMediaEngine__Handle handle,bool enabled,bool useTexture,agora_media__EXTERNAL_VIDEO_SOURCE_TYPE__C sourceType,agora_rtc__SenderOptions__C encodedVideoOption);
+int agora_media__IMediaEngine__setExternalAudioSource(agora_media__IMediaEngine__Handle handle,bool enabled,int sampleRate,int channels,bool localPlayback,bool publish);
+agora_rtc__track_id_t__C agora_media__IMediaEngine__createCustomAudioTrack(agora_media__IMediaEngine__Handle handle,agora_rtc__AUDIO_TRACK_TYPE__C trackType,const agora_rtc__AudioTrackConfig__C& config);
+int agora_media__IMediaEngine__destroyCustomAudioTrack(agora_media__IMediaEngine__Handle handle,agora_rtc__track_id_t__C trackId);
+int agora_media__IMediaEngine__setExternalAudioSink(agora_media__IMediaEngine__Handle handle,bool enabled,int sampleRate,int channels);
+int agora_media__IMediaEngine__enableCustomAudioLocalPlayback(agora_media__IMediaEngine__Handle handle,agora_rtc__track_id_t__C trackId,bool enabled);
+int agora_media__IMediaEngine__pushVideoFrame(agora_media__IMediaEngine__Handle handle,agora_media_base__ExternalVideoFrame__C* frame,unsigned int videoTrackId);
+int agora_media__IMediaEngine__pushEncodedVideoImage(agora_media__IMediaEngine__Handle handle,const uint8_t* imageBuffer,size_t length,const agora_rtc__EncodedVideoFrameInfo__C& videoEncodedFrameInfo,unsigned int videoTrackId);
+int agora_media__IMediaEngine__addVideoFrameRenderer(agora_media__IMediaEngine__Handle handle,agora_media_base__IVideoFrameObserver__Handle* renderer);
+int agora_media__IMediaEngine__removeVideoFrameRenderer(agora_media__IMediaEngine__Handle handle,agora_media_base__IVideoFrameObserver__Handle* renderer);
+void agora_media__IMediaEngine__release(agora_media__IMediaEngine__Handle handle);
+    
+    #endif// IAGORAMEDIAENGINE_C_H_
+    

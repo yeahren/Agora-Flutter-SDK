@@ -5,6 +5,8 @@
 #include <stdint.h>
 #include <stddef.h>
 
+typedef void* base__IAgoraService__Handle;
+
 
 
 
@@ -157,6 +159,7 @@ AUDIO_SESSION_OPERATION_RESTRICTION_ALL= 1<<7,
 
 typedef const char* agora__user_id_t__C;
 typedef void* agora__view_t__C;
+
 
 typedef struct agora__UserInfo__C
 {
@@ -380,6 +383,7 @@ bool sendEvenIfEmpty;
 } agora_rtc__EncodedAudioFrameAdvancedSettings__C;
 
 
+
 typedef struct agora_rtc__EncodedAudioFrameInfo__C
 {
   agora_rtc__AUDIO_CODEC_TYPE__C codec;
@@ -389,6 +393,11 @@ int numberOfChannels;
 agora_rtc__EncodedAudioFrameAdvancedSettings__C advancedSettings;
 int64_t captureTimeMs;
 } agora_rtc__EncodedAudioFrameInfo__C;
+
+
+
+
+
 
 
 typedef struct agora_rtc__AudioPcmDataInfo__C
@@ -415,12 +424,16 @@ VIDEO_STREAM_LOW= 1,
 } agora_rtc__VIDEO_STREAM_TYPE__C;
 
 
+
 typedef struct agora_rtc__VideoSubscriptionOptions__C
 {
   agora_rtc__VIDEO_STREAM_TYPE__C type;
 bool* encodedFrameOnly;
 } agora_rtc__VideoSubscriptionOptions__C;
 
+
+
+typedef unsigned int agora_rtc__uid_t__C;
 
 typedef struct agora_rtc__EncodedVideoFrameInfo__C
 {
@@ -843,6 +856,31 @@ USER_STATE_ENABLE_VIDEO= (1<<4),
 USER_STATE_ENABLE_LOCAL_VIDEO= (1<<8),
 } agora_rtc__REMOTE_USER_STATE__C;
 
+typedef unsigned int agora_rtc__track_id_t__C;
+
+typedef enum agora_rtc__VIDEO_SOURCE_TYPE__C
+{
+  VIDEO_SOURCE_CAMERA_PRIMARY= 0,
+VIDEO_SOURCE_CAMERA= VIDEO_SOURCE_CAMERA_PRIMARY,
+VIDEO_SOURCE_CAMERA_SECONDARY= 1,
+VIDEO_SOURCE_SCREEN_PRIMARY= 2,
+VIDEO_SOURCE_SCREEN= VIDEO_SOURCE_SCREEN_PRIMARY,
+VIDEO_SOURCE_SCREEN_SECONDARY= 3,
+VIDEO_SOURCE_CUSTOM= 4,
+VIDEO_SOURCE_MEDIA_PLAYER= 5,
+VIDEO_SOURCE_RTC_IMAGE_PNG= 6,
+VIDEO_SOURCE_RTC_IMAGE_JPEG= 7,
+VIDEO_SOURCE_RTC_IMAGE_GIF= 8,
+VIDEO_SOURCE_REMOTE= 9,
+VIDEO_SOURCE_TRANSCODED= 10,
+VIDEO_SOURCE_CAMERA_THIRD= 11,
+VIDEO_SOURCE_CAMERA_FOURTH= 12,
+VIDEO_SOURCE_SCREEN_THIRD= 13,
+VIDEO_SOURCE_SCREEN_FOURTH= 14,
+VIDEO_SOURCE_UNKNOWN= 100,
+} agora_rtc__VIDEO_SOURCE_TYPE__C;
+
+
 
 typedef struct agora_rtc__VideoTrackInfo__C
 {
@@ -1203,6 +1241,15 @@ VIDEO_VIEW_SETUP_REMOVE= 2,
 } agora_rtc__VIDEO_VIEW_SETUP_MODE__C;
 
 
+
+typedef enum agora_media_base__RENDER_MODE_TYPE__C
+{
+  RENDER_MODE_HIDDEN= 1,
+RENDER_MODE_FIT= 2,
+RENDER_MODE_ADAPTIVE= 3,
+} agora_media_base__RENDER_MODE_TYPE__C;
+
+
 typedef struct agora_rtc__VideoCanvas__C
 {
   agora__view_t__C view;
@@ -1471,6 +1518,9 @@ typedef struct agora_rtc__AudioEncodedFrameObserverConfig__C
 agora_rtc__AUDIO_ENCODING_TYPE__C encodingType;
 } agora_rtc__AudioEncodedFrameObserverConfig__C;
 
+
+
+
 typedef void* agora_rtc__IAudioEncodedFrameObserver__Handle;
 
 void agora_rtc__IAudioEncodedFrameObserver__onRecordAudioEncodedFrame(agora_rtc__IAudioEncodedFrameObserver__Handle handle,const uint8_t* frameBuffer,int length,const agora_rtc__EncodedAudioFrameInfo__C& audioEncodedFrameInfo);
@@ -1601,6 +1651,7 @@ AES_128_GCM2= 7,
 AES_256_GCM2= 8,
 MODE_END,
 } agora_rtc__ENCRYPTION_MODE__C;
+
 
 
 typedef struct agora_rtc__EncryptionConfig__C
@@ -1801,6 +1852,14 @@ void agora_base__LicenseCallback__onLicenseRequest(agora_base__LicenseCallback__
 void agora_base__LicenseCallback__onLicenseValidated(agora_base__LicenseCallback__Handle handle);
 void agora_base__LicenseCallback__onLicenseError(agora_base__LicenseCallback__Handle handle,int result);
 
+
+
+
+
+
+
+
+
 typedef struct agora__SpatialAudioParams__C
 {
   double* speaker_azimuth;
@@ -1817,35 +1876,10 @@ bool* enable_doppler;
 
 
 
-typedef unsigned int agora_rtc__uid_t__C;
-typedef unsigned int agora_rtc__track_id_t__C;
 typedef unsigned int agora_rtc__conn_id_t__C;
 typedef unsigned int agora_rtc__video_track_id_t__C;
 
 
-
-
-typedef enum agora_rtc__VIDEO_SOURCE_TYPE__C
-{
-  VIDEO_SOURCE_CAMERA_PRIMARY= 0,
-VIDEO_SOURCE_CAMERA= VIDEO_SOURCE_CAMERA_PRIMARY,
-VIDEO_SOURCE_CAMERA_SECONDARY= 1,
-VIDEO_SOURCE_SCREEN_PRIMARY= 2,
-VIDEO_SOURCE_SCREEN= VIDEO_SOURCE_SCREEN_PRIMARY,
-VIDEO_SOURCE_SCREEN_SECONDARY= 3,
-VIDEO_SOURCE_CUSTOM= 4,
-VIDEO_SOURCE_MEDIA_PLAYER= 5,
-VIDEO_SOURCE_RTC_IMAGE_PNG= 6,
-VIDEO_SOURCE_RTC_IMAGE_JPEG= 7,
-VIDEO_SOURCE_RTC_IMAGE_GIF= 8,
-VIDEO_SOURCE_REMOTE= 9,
-VIDEO_SOURCE_TRANSCODED= 10,
-VIDEO_SOURCE_CAMERA_THIRD= 11,
-VIDEO_SOURCE_CAMERA_FOURTH= 12,
-VIDEO_SOURCE_SCREEN_THIRD= 13,
-VIDEO_SOURCE_SCREEN_FOURTH= 14,
-VIDEO_SOURCE_UNKNOWN= 100,
-} agora_rtc__VIDEO_SOURCE_TYPE__C;
 
 
 typedef enum agora_rtc__AudioRoute__C
@@ -1868,6 +1902,8 @@ typedef enum agora_rtc__BYTES_PER_SAMPLE__C
 {
   TWO_BYTES_PER_SAMPLE= 2,
 } agora_rtc__BYTES_PER_SAMPLE__C;
+
+
 
 
 typedef struct agora_rtc__AudioParameters__C
@@ -1940,11 +1976,15 @@ typedef void* agora_media_base__view_t__C;
 typedef const char* agora_media_base__user_id_t__C;
 
 
+
+
 typedef struct agora_media_base__PacketOptions__C
 {
   uint32_t timestamp;
 uint8_t audioLevelIndication;
 } agora_media_base__PacketOptions__C;
+
+
 
 
 typedef struct agora_media_base__AudioEncodedFrameInfo__C
@@ -1959,6 +1999,10 @@ typedef enum agora_media_base____C
   kMaxDataSizeSamples= 3840,
 kMaxDataSizeBytes= kMaxDataSizeSamples*sizeof(int16_t),
 } agora_media_base____C;
+
+
+
+
 
 
 typedef struct agora_media_base__AudioPcmFrame__C
@@ -1999,14 +2043,6 @@ VIDEO_TEXTURE_ID3D11TEXTURE2D= 17,
 } agora_media_base__VIDEO_PIXEL_FORMAT__C;
 
 
-typedef enum agora_media_base__RENDER_MODE_TYPE__C
-{
-  RENDER_MODE_HIDDEN= 1,
-RENDER_MODE_FIT= 2,
-RENDER_MODE_ADAPTIVE= 3,
-} agora_media_base__RENDER_MODE_TYPE__C;
-
-
 typedef enum agora_media_base__CAMERA_VIDEO_SOURCE_TYPE__C
 {
   CAMERA_SOURCE_FRONT= 0,
@@ -2028,6 +2064,8 @@ typedef enum agora_media_base__VIDEO_BUFFER_TYPE__C
 VIDEO_BUFFER_ARRAY= 2,
 VIDEO_BUFFER_TEXTURE= 3,
 } agora_media_base__VIDEO_BUFFER_TYPE__C;
+
+
 
 
 typedef struct agora_media_base__ExternalVideoFrame__C
@@ -2053,6 +2091,12 @@ uint8_t* alphaBuffer;
 void* d3d11_texture_2d;
 int texture_slice_index;
 } agora_media_base__ExternalVideoFrame__C;
+
+
+
+
+
+
 
 
 typedef struct agora_media_base__VideoFrame__C
@@ -2114,6 +2158,8 @@ typedef enum agora_media____C
 {
   MAX_HANDLE_TIME_CNT= 10,
 } agora_media____C;
+
+
 
 
 typedef struct agora_media__AudioFrame__C
@@ -2182,6 +2228,8 @@ typedef void* agora_media__IAudioSpectrumObserver__Handle;
 
 bool agora_media__IAudioSpectrumObserver__onLocalAudioSpectrum(agora_media__IAudioSpectrumObserver__Handle handle,const agora_media__AudioSpectrumData__C& data);
 bool agora_media__IAudioSpectrumObserver__onRemoteAudioSpectrum(agora_media__IAudioSpectrumObserver__Handle handle,const agora_media__UserAudioSpectrumInfo__C* spectrums,unsigned int spectrumNumber);
+
+
 typedef void* agora_media__IVideoEncodedFrameObserver__Handle;
 
 bool agora_media__IVideoEncodedFrameObserver__onEncodedVideoFrameReceived(agora_media__IVideoEncodedFrameObserver__Handle handle,agora_rtc__uid_t__C uid,const uint8_t* imageBuffer,size_t length,const agora_rtc__EncodedVideoFrameInfo__C& videoEncodedFrameInfo);
@@ -2355,6 +2403,7 @@ PLAYER_PRELOAD_EVENT_ERROR= 2,
 } agora_media_base__PLAYER_PRELOAD_EVENT__C;
 
 
+
 typedef struct agora_media_base__PlayerStreamInfo__C
 {
   int streamIndex;
@@ -2387,12 +2436,17 @@ PLAYER_METADATA_TYPE_SEI= 1,
 } agora_media_base__MEDIA_PLAYER_METADATA_TYPE__C;
 
 
+
+
+
 typedef struct agora_media_base__CacheStatistics__C
 {
   int64_t fileSize;
 int64_t cacheSize;
 int64_t downloadSize;
 } agora_media_base__CacheStatistics__C;
+
+
 
 
 typedef struct agora_media_base__PlayerUpdatedInfo__C
@@ -2402,10 +2456,14 @@ const char * deviceId;
 agora_media_base__CacheStatistics__C cacheStatistics;
 } agora_media_base__PlayerUpdatedInfo__C;
 
+
 typedef void* agora_media_base__IMediaPlayerCustomDataProvider__Handle;
 
 int agora_media_base__IMediaPlayerCustomDataProvider__onReadData(agora_media_base__IMediaPlayerCustomDataProvider__Handle handle,unsigned char* buffer,int bufferSize);
 int64_t agora_media_base__IMediaPlayerCustomDataProvider__onSeek(agora_media_base__IMediaPlayerCustomDataProvider__Handle handle,int64_t offset,int whence);
+
+
+
 
 typedef struct agora_media_base__MediaSource__C
 {
@@ -2432,6 +2490,7 @@ LOG_LEVEL_FATAL= 0x0008,
 LOG_LEVEL_API_CALL= 0x0010,
 } agora_commons__LOG_LEVEL__C;
 
+
 typedef void* agora_commons__ILogWriter__Handle;
 
 int32_t agora_commons__ILogWriter__writeLog(agora_commons__ILogWriter__Handle handle,agora_commons__LOG_LEVEL__C level,const char* message,uint16_t length);
@@ -2446,6 +2505,7 @@ LOG_FILTER_ERROR= 0x000c,
 LOG_FILTER_CRITICAL= 0x0008,
 LOG_FILTER_MASK= 0x80f,
 } agora_commons__LOG_FILTER_TYPE__C;
+
 
 
 
@@ -2470,6 +2530,8 @@ AUDIO_MIXING_DUAL_MONO_R= 2,
 AUDIO_MIXING_DUAL_MONO_MIX= 3,
 } agora_media__AUDIO_MIXING_DUAL_MONO_MODE__C;
 
+
+
 typedef void* agora_media__IMediaEngine__Handle;
 
 int agora_media__IMediaEngine__registerAudioFrameObserver(agora_media__IMediaEngine__Handle handle,agora_media__IAudioFrameObserver__Handle* observer);
@@ -2492,9 +2554,49 @@ void agora_media__IMediaEngine__release(agora_media__IMediaEngine__Handle handle
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+typedef void* agora_rtc__IMediaPlayerSourceObserver__Handle;
+
+void agora_rtc__IMediaPlayerSourceObserver__onPlayerSourceStateChanged(agora_rtc__IMediaPlayerSourceObserver__Handle handle,agora_media_base__MEDIA_PLAYER_STATE__C state,agora_media_base__MEDIA_PLAYER_ERROR__C ec);
+void agora_rtc__IMediaPlayerSourceObserver__onPositionChanged(agora_rtc__IMediaPlayerSourceObserver__Handle handle,int64_t position_ms);
+void agora_rtc__IMediaPlayerSourceObserver__onPlayerEvent(agora_rtc__IMediaPlayerSourceObserver__Handle handle,agora_media_base__MEDIA_PLAYER_EVENT__C eventCode,int64_t elapsedTime,const char* message);
+void agora_rtc__IMediaPlayerSourceObserver__onMetaData(agora_rtc__IMediaPlayerSourceObserver__Handle handle,const void* data,int length);
+void agora_rtc__IMediaPlayerSourceObserver__onPlayBufferUpdated(agora_rtc__IMediaPlayerSourceObserver__Handle handle,int64_t playCachedBuffer);
+void agora_rtc__IMediaPlayerSourceObserver__onPreloadEvent(agora_rtc__IMediaPlayerSourceObserver__Handle handle,const char* src,agora_media_base__PLAYER_PRELOAD_EVENT__C event);
+void agora_rtc__IMediaPlayerSourceObserver__onCompleted(agora_rtc__IMediaPlayerSourceObserver__Handle handle);
+void agora_rtc__IMediaPlayerSourceObserver__onAgoraCDNTokenWillExpire(agora_rtc__IMediaPlayerSourceObserver__Handle handle);
+void agora_rtc__IMediaPlayerSourceObserver__onPlayerSrcInfoChanged(agora_rtc__IMediaPlayerSourceObserver__Handle handle,const agora_media_base__SrcInfo__C& from,const agora_media_base__SrcInfo__C& to);
+void agora_rtc__IMediaPlayerSourceObserver__onPlayerInfoUpdated(agora_rtc__IMediaPlayerSourceObserver__Handle handle,const agora_media_base__PlayerUpdatedInfo__C& info);
+void agora_rtc__IMediaPlayerSourceObserver__onAudioVolumeIndication(agora_rtc__IMediaPlayerSourceObserver__Handle handle,int volume);
+typedef void* agora_rtc__IMediaPlayerSourceObserver__Handle;
+
+void agora_rtc__IMediaPlayerSourceObserver__onPlayerSourceStateChanged(agora_rtc__IMediaPlayerSourceObserver__Handle handle,agora_media_base__MEDIA_PLAYER_STATE__C state,agora_media_base__MEDIA_PLAYER_ERROR__C ec);
+void agora_rtc__IMediaPlayerSourceObserver__onPositionChanged(agora_rtc__IMediaPlayerSourceObserver__Handle handle,int64_t position_ms);
+void agora_rtc__IMediaPlayerSourceObserver__onPlayerEvent(agora_rtc__IMediaPlayerSourceObserver__Handle handle,agora_media_base__MEDIA_PLAYER_EVENT__C eventCode,int64_t elapsedTime,const char* message);
+void agora_rtc__IMediaPlayerSourceObserver__onMetaData(agora_rtc__IMediaPlayerSourceObserver__Handle handle,const void* data,int length);
+void agora_rtc__IMediaPlayerSourceObserver__onPlayBufferUpdated(agora_rtc__IMediaPlayerSourceObserver__Handle handle,int64_t playCachedBuffer);
+void agora_rtc__IMediaPlayerSourceObserver__onPreloadEvent(agora_rtc__IMediaPlayerSourceObserver__Handle handle,const char* src,agora_media_base__PLAYER_PRELOAD_EVENT__C event);
+void agora_rtc__IMediaPlayerSourceObserver__onCompleted(agora_rtc__IMediaPlayerSourceObserver__Handle handle);
+void agora_rtc__IMediaPlayerSourceObserver__onAgoraCDNTokenWillExpire(agora_rtc__IMediaPlayerSourceObserver__Handle handle);
+void agora_rtc__IMediaPlayerSourceObserver__onPlayerSrcInfoChanged(agora_rtc__IMediaPlayerSourceObserver__Handle handle,const agora_media_base__SrcInfo__C& from,const agora_media_base__SrcInfo__C& to);
+void agora_rtc__IMediaPlayerSourceObserver__onPlayerInfoUpdated(agora_rtc__IMediaPlayerSourceObserver__Handle handle,const agora_media_base__PlayerUpdatedInfo__C& info);
+void agora_rtc__IMediaPlayerSourceObserver__onAudioVolumeIndication(agora_rtc__IMediaPlayerSourceObserver__Handle handle,int volume);
+
+
+
 typedef void* agora_rtc__IMediaPlayer__Handle;
 
-int agora_rtc__IMediaPlayer__initialize(agora_rtc__IMediaPlayer__Handle handle,base::IAgoraService* agora_service);
+int agora_rtc__IMediaPlayer__initialize(agora_rtc__IMediaPlayer__Handle handle,base__IAgoraService__Handle agora_service);
 int agora_rtc__IMediaPlayer__getMediaPlayerId(agora_rtc__IMediaPlayer__Handle handle);
 int agora_rtc__IMediaPlayer__open(agora_rtc__IMediaPlayer__Handle handle,const char* url,int64_t startPos);
 int agora_rtc__IMediaPlayer__openWithCustomSource(agora_rtc__IMediaPlayer__Handle handle,int64_t startPos,agora_media_base__IMediaPlayerCustomDataProvider__Handle* provider);
@@ -2551,6 +2653,7 @@ int agora_rtc__IMediaPlayer__playPreloadedSrc(agora_rtc__IMediaPlayer__Handle ha
 int agora_rtc__IMediaPlayer__unloadSrc(agora_rtc__IMediaPlayer__Handle handle,const char* src);
 int agora_rtc__IMediaPlayer__setSpatialAudioParams(agora_rtc__IMediaPlayer__Handle handle,const agora__SpatialAudioParams__C& params);
 int agora_rtc__IMediaPlayer__setSoundPositionParams(agora_rtc__IMediaPlayer__Handle handle,float pan,float gain);
+
 typedef void* agora_rtc__IMediaPlayerCacheManager__Handle;
 
 int agora_rtc__IMediaPlayerCacheManager__removeAllCaches(agora_rtc__IMediaPlayerCacheManager__Handle handle);
@@ -2564,6 +2667,20 @@ int agora_rtc__IMediaPlayerCacheManager__getCacheDir(agora_rtc__IMediaPlayerCach
 int agora_rtc__IMediaPlayerCacheManager__getMaxCacheFileCount(agora_rtc__IMediaPlayerCacheManager__Handle handle);
 int64_t agora_rtc__IMediaPlayerCacheManager__getMaxCacheFileSize(agora_rtc__IMediaPlayerCacheManager__Handle handle);
 int agora_rtc__IMediaPlayerCacheManager__getCacheFileCount(agora_rtc__IMediaPlayerCacheManager__Handle handle);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2607,19 +2724,6 @@ int agora_rtc__IMediaPlayerSource__switchSrc(agora_rtc__IMediaPlayerSource__Hand
 int agora_rtc__IMediaPlayerSource__preloadSrc(agora_rtc__IMediaPlayerSource__Handle handle,const char* src,int64_t startPos);
 int agora_rtc__IMediaPlayerSource__unloadSrc(agora_rtc__IMediaPlayerSource__Handle handle,const char* src);
 int agora_rtc__IMediaPlayerSource__playPreloadedSrc(agora_rtc__IMediaPlayerSource__Handle handle,const char* src);
-typedef void* agora_rtc__IMediaPlayerSourceObserver__Handle;
-
-void agora_rtc__IMediaPlayerSourceObserver__onPlayerSourceStateChanged(agora_rtc__IMediaPlayerSourceObserver__Handle handle,agora_media_base__MEDIA_PLAYER_STATE__C state,agora_media_base__MEDIA_PLAYER_ERROR__C ec);
-void agora_rtc__IMediaPlayerSourceObserver__onPositionChanged(agora_rtc__IMediaPlayerSourceObserver__Handle handle,int64_t position_ms);
-void agora_rtc__IMediaPlayerSourceObserver__onPlayerEvent(agora_rtc__IMediaPlayerSourceObserver__Handle handle,agora_media_base__MEDIA_PLAYER_EVENT__C eventCode,int64_t elapsedTime,const char* message);
-void agora_rtc__IMediaPlayerSourceObserver__onMetaData(agora_rtc__IMediaPlayerSourceObserver__Handle handle,const void* data,int length);
-void agora_rtc__IMediaPlayerSourceObserver__onPlayBufferUpdated(agora_rtc__IMediaPlayerSourceObserver__Handle handle,int64_t playCachedBuffer);
-void agora_rtc__IMediaPlayerSourceObserver__onPreloadEvent(agora_rtc__IMediaPlayerSourceObserver__Handle handle,const char* src,agora_media_base__PLAYER_PRELOAD_EVENT__C event);
-void agora_rtc__IMediaPlayerSourceObserver__onCompleted(agora_rtc__IMediaPlayerSourceObserver__Handle handle);
-void agora_rtc__IMediaPlayerSourceObserver__onAgoraCDNTokenWillExpire(agora_rtc__IMediaPlayerSourceObserver__Handle handle);
-void agora_rtc__IMediaPlayerSourceObserver__onPlayerSrcInfoChanged(agora_rtc__IMediaPlayerSourceObserver__Handle handle,const agora_media_base__SrcInfo__C& from,const agora_media_base__SrcInfo__C& to);
-void agora_rtc__IMediaPlayerSourceObserver__onPlayerInfoUpdated(agora_rtc__IMediaPlayerSourceObserver__Handle handle,const agora_media_base__PlayerUpdatedInfo__C& info);
-void agora_rtc__IMediaPlayerSourceObserver__onAudioVolumeIndication(agora_rtc__IMediaPlayerSourceObserver__Handle handle,int volume);
 
 
 
@@ -2672,6 +2776,11 @@ STREAMING_SRC_STATE_ERROR= 6,
 } agora_rtc__STREAMING_SRC_STATE__C;
 
 
+
+
+
+
+
 typedef struct agora_rtc__InputSeiData__C
 {
   int32_t type;
@@ -2681,6 +2790,32 @@ uint8_t* private_data;
 int32_t data_size;
 } agora_rtc__InputSeiData__C;
 
+
+
+
+
+
+
+
+
+
+
+typedef void* agora_rtc__IMediaStreamingSourceObserver__Handle;
+
+void agora_rtc__IMediaStreamingSourceObserver__onStateChanged(agora_rtc__IMediaStreamingSourceObserver__Handle handle,agora_rtc__STREAMING_SRC_STATE__C state,agora_rtc__STREAMING_SRC_ERR__C err_code);
+void agora_rtc__IMediaStreamingSourceObserver__onOpenDone(agora_rtc__IMediaStreamingSourceObserver__Handle handle,agora_rtc__STREAMING_SRC_ERR__C err_code);
+void agora_rtc__IMediaStreamingSourceObserver__onSeekDone(agora_rtc__IMediaStreamingSourceObserver__Handle handle,agora_rtc__STREAMING_SRC_ERR__C err_code);
+void agora_rtc__IMediaStreamingSourceObserver__onEofOnce(agora_rtc__IMediaStreamingSourceObserver__Handle handle,int64_t progress_ms,int64_t repeat_count);
+void agora_rtc__IMediaStreamingSourceObserver__onProgress(agora_rtc__IMediaStreamingSourceObserver__Handle handle,int64_t position_ms);
+void agora_rtc__IMediaStreamingSourceObserver__onMetaData(agora_rtc__IMediaStreamingSourceObserver__Handle handle,const void* data,int length);
+typedef void* agora_rtc__IMediaStreamingSourceObserver__Handle;
+
+void agora_rtc__IMediaStreamingSourceObserver__onStateChanged(agora_rtc__IMediaStreamingSourceObserver__Handle handle,agora_rtc__STREAMING_SRC_STATE__C state,agora_rtc__STREAMING_SRC_ERR__C err_code);
+void agora_rtc__IMediaStreamingSourceObserver__onOpenDone(agora_rtc__IMediaStreamingSourceObserver__Handle handle,agora_rtc__STREAMING_SRC_ERR__C err_code);
+void agora_rtc__IMediaStreamingSourceObserver__onSeekDone(agora_rtc__IMediaStreamingSourceObserver__Handle handle,agora_rtc__STREAMING_SRC_ERR__C err_code);
+void agora_rtc__IMediaStreamingSourceObserver__onEofOnce(agora_rtc__IMediaStreamingSourceObserver__Handle handle,int64_t progress_ms,int64_t repeat_count);
+void agora_rtc__IMediaStreamingSourceObserver__onProgress(agora_rtc__IMediaStreamingSourceObserver__Handle handle,int64_t position_ms);
+void agora_rtc__IMediaStreamingSourceObserver__onMetaData(agora_rtc__IMediaStreamingSourceObserver__Handle handle,const void* data,int length);
 typedef void* agora_rtc__IMediaStreamingSource__Handle;
 
 int agora_rtc__IMediaStreamingSource__open(agora_rtc__IMediaStreamingSource__Handle handle,const char* url,int64_t start_pos,bool auto_play);
@@ -2702,14 +2837,6 @@ int agora_rtc__IMediaStreamingSource__appendSeiData(agora_rtc__IMediaStreamingSo
 int agora_rtc__IMediaStreamingSource__registerObserver(agora_rtc__IMediaStreamingSource__Handle handle,agora_rtc__IMediaStreamingSourceObserver__Handle* observer);
 int agora_rtc__IMediaStreamingSource__unregisterObserver(agora_rtc__IMediaStreamingSource__Handle handle,agora_rtc__IMediaStreamingSourceObserver__Handle* observer);
 int agora_rtc__IMediaStreamingSource__parseMediaInfo(agora_rtc__IMediaStreamingSource__Handle handle,const char* url,agora_media_base__PlayerStreamInfo__C& video_info,agora_media_base__PlayerStreamInfo__C& audio_info);
-typedef void* agora_rtc__IMediaStreamingSourceObserver__Handle;
-
-void agora_rtc__IMediaStreamingSourceObserver__onStateChanged(agora_rtc__IMediaStreamingSourceObserver__Handle handle,agora_rtc__STREAMING_SRC_STATE__C state,agora_rtc__STREAMING_SRC_ERR__C err_code);
-void agora_rtc__IMediaStreamingSourceObserver__onOpenDone(agora_rtc__IMediaStreamingSourceObserver__Handle handle,agora_rtc__STREAMING_SRC_ERR__C err_code);
-void agora_rtc__IMediaStreamingSourceObserver__onSeekDone(agora_rtc__IMediaStreamingSourceObserver__Handle handle,agora_rtc__STREAMING_SRC_ERR__C err_code);
-void agora_rtc__IMediaStreamingSourceObserver__onEofOnce(agora_rtc__IMediaStreamingSourceObserver__Handle handle,int64_t progress_ms,int64_t repeat_count);
-void agora_rtc__IMediaStreamingSourceObserver__onProgress(agora_rtc__IMediaStreamingSourceObserver__Handle handle,int64_t position_ms);
-void agora_rtc__IMediaStreamingSourceObserver__onMetaData(agora_rtc__IMediaStreamingSourceObserver__Handle handle,const void* data,int length);
 
 
 
@@ -2735,6 +2862,7 @@ kMusicContentCenterStatusErrHttpInternalError= 7,
 } agora_rtc__MusicContentCenterStatusCode__C;
 
 
+
 typedef struct agora_rtc__MusicChartInfo__C
 {
   const char* chartName;
@@ -2747,6 +2875,7 @@ typedef enum agora_rtc__MUSIC_CACHE_STATUS_TYPE__C
   MUSIC_CACHE_STATUS_TYPE_CACHED= 0,
 MUSIC_CACHE_STATUS_TYPE_CACHING= 1,
 } agora_rtc__MUSIC_CACHE_STATUS_TYPE__C;
+
 
 
 typedef struct agora_rtc__MusicCacheInfo__C
@@ -2767,11 +2896,21 @@ const char* bandwidth;
 } agora_rtc__MvProperty__C;
 
 
+
+
 typedef struct agora_rtc__ClimaxSegment__C
 {
   int32_t startTimeMs;
 int32_t endTimeMs;
 } agora_rtc__ClimaxSegment__C;
+
+
+
+
+
+
+
+
 
 
 typedef struct agora_rtc__Music__C
@@ -2792,6 +2931,7 @@ int32_t mvPropertyCount;
 agora_rtc__MvProperty__C* mvPropertyList;
 } agora_rtc__Music__C;
 
+
 typedef void* agora_rtc__MusicCollection__Handle;
 
 int agora_rtc__MusicCollection__getCount(agora_rtc__MusicCollection__Handle handle);
@@ -2799,6 +2939,9 @@ int agora_rtc__MusicCollection__getTotal(agora_rtc__MusicCollection__Handle hand
 int agora_rtc__MusicCollection__getPage(agora_rtc__MusicCollection__Handle handle);
 int agora_rtc__MusicCollection__getPageSize(agora_rtc__MusicCollection__Handle handle);
 agora_rtc__Music__C* agora_rtc__MusicCollection__getMusic(agora_rtc__MusicCollection__Handle handle,int32_t index);
+
+
+
 typedef void* agora_rtc__IMusicContentCenterEventHandler__Handle;
 
 void agora_rtc__IMusicContentCenterEventHandler__onMusicChartsResult(agora_rtc__IMusicContentCenterEventHandler__Handle handle,const char* requestId,agora_rtc__MusicChartCollection__Handle result,agora_rtc__MusicContentCenterStatusCode__C errorCode);
@@ -2806,6 +2949,8 @@ void agora_rtc__IMusicContentCenterEventHandler__onMusicCollectionResult(agora_r
 void agora_rtc__IMusicContentCenterEventHandler__onLyricResult(agora_rtc__IMusicContentCenterEventHandler__Handle handle,const char* requestId,int64_t songCode,const char* lyricUrl,agora_rtc__MusicContentCenterStatusCode__C errorCode);
 void agora_rtc__IMusicContentCenterEventHandler__onSongSimpleInfoResult(agora_rtc__IMusicContentCenterEventHandler__Handle handle,const char* requestId,int64_t songCode,const char* simpleInfo,agora_rtc__MusicContentCenterStatusCode__C errorCode);
 void agora_rtc__IMusicContentCenterEventHandler__onPreLoadEvent(agora_rtc__IMusicContentCenterEventHandler__Handle handle,const char* requestId,int64_t songCode,int percent,const char* lyricUrl,agora_rtc__PreloadStatusCode__C status,agora_rtc__MusicContentCenterStatusCode__C errorCode);
+
+
 
 typedef struct agora_rtc__MusicContentCenterConfiguration__C
 {
@@ -2817,9 +2962,32 @@ const char* mccDomain;
 agora_rtc__IMusicContentCenterEventHandler__Handle* eventHandler;
 } agora_rtc__MusicContentCenterConfiguration__C;
 
+
+
 typedef void* agora_rtc__IMusicPlayer__Handle;
 
 int agora_rtc__IMusicPlayer__open(agora_rtc__IMusicPlayer__Handle handle,int64_t songCode,int64_t startPos);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 typedef void* agora_rtc__IMusicContentCenter__Handle;
 
 int agora_rtc__IMusicContentCenter__initialize(agora_rtc__IMusicContentCenter__Handle handle,const agora_rtc__MusicContentCenterConfiguration__C& configuration);
@@ -2995,6 +3163,8 @@ int hwEncoderAccelerating;
 } agora_rtc__LocalVideoStats__C;
 
 
+
+
 typedef struct agora_rtc__RemoteAudioStats__C
 {
   agora_rtc__uid_t__C uid;
@@ -3128,6 +3298,7 @@ bool followEncodeDimensionRatio;
 } agora_rtc__CameraCapturerConfiguration__C;
 
 
+
 typedef struct agora_rtc__ScreenCaptureConfiguration__C
 {
   bool isCaptureWindow;
@@ -3186,6 +3357,7 @@ unsigned int agora_rtc__IScreenCaptureSourceList__getCount(agora_rtc__IScreenCap
 agora_rtc__ScreenCaptureSourceInfo__C agora_rtc__IScreenCaptureSourceList__getSourceInfo(agora_rtc__IScreenCaptureSourceList__Handle handle,unsigned int index);
 void agora_rtc__IScreenCaptureSourceList__release(agora_rtc__IScreenCaptureSourceList__Handle handle);
 
+
 typedef struct agora_rtc__AdvancedAudioOptions__C
 {
   int* audioProcessingChannels;
@@ -3198,6 +3370,35 @@ typedef struct agora_rtc__ImageTrackOptions__C
 int fps;
 agora_rtc__VIDEO_MIRROR_MODE_TYPE__C mirrorMode;
 } agora_rtc__ImageTrackOptions__C;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 typedef struct agora_rtc__ChannelMediaOptions__C
@@ -3264,6 +3465,10 @@ typedef struct agora_rtc__LeaveChannelOptions__C
 bool stopAllEffect;
 bool stopMicrophoneRecording;
 } agora_rtc__LeaveChannelOptions__C;
+
+
+
+
 
 typedef void* agora_rtc__IRtcEngineEventHandler__Handle;
 
@@ -3367,6 +3572,7 @@ int agora_rtc__IVideoDeviceCollection__getCount(agora_rtc__IVideoDeviceCollectio
 int agora_rtc__IVideoDeviceCollection__setDevice(agora_rtc__IVideoDeviceCollection__Handle handle,const char deviceIdUTF8[512]);
 int agora_rtc__IVideoDeviceCollection__getDevice(agora_rtc__IVideoDeviceCollection__Handle handle,int index,char deviceNameUTF8[512],char deviceIdUTF8[512]);
 void agora_rtc__IVideoDeviceCollection__release(agora_rtc__IVideoDeviceCollection__Handle handle);
+
 typedef void* agora_rtc__IVideoDeviceManager__Handle;
 
 agora_rtc__IVideoDeviceCollection__Handle* agora_rtc__IVideoDeviceManager__enumerateVideoDevices(agora_rtc__IVideoDeviceManager__Handle handle);
@@ -3459,6 +3665,12 @@ typedef void* agora_rtc__IDirectCdnStreamingEventHandler__Handle;
 void agora_rtc__IDirectCdnStreamingEventHandler__onDirectCdnStreamingStateChanged(agora_rtc__IDirectCdnStreamingEventHandler__Handle handle,agora_rtc__DIRECT_CDN_STREAMING_STATE__C state,agora_rtc__DIRECT_CDN_STREAMING_ERROR__C error,const char* message);
 void agora_rtc__IDirectCdnStreamingEventHandler__onDirectCdnStreamingStats(agora_rtc__IDirectCdnStreamingEventHandler__Handle handle,const agora_rtc__DirectCdnStreamingStats__C& stats);
 
+
+
+
+
+
+
 typedef struct agora_rtc__DirectCdnStreamingMediaOptions__C
 {
   bool* publishCameraTrack;
@@ -3478,6 +3690,10 @@ agora_rtc__uid_t__C remoteUid;
 const char* channelId;
 agora_rtc__uid_t__C localUid;
 } agora_rtc__ExtensionInfo__C;
+
+
+
+
 
 typedef void* agora_rtc__IRtcEngine__Handle;
 
@@ -3872,6 +4088,9 @@ typedef struct agora_rtc__RtcConnection__C
 agora_rtc__uid_t__C localUid;
 } agora_rtc__RtcConnection__C;
 
+
+
+
 typedef void* agora_rtc__IRtcEngineEventHandlerEx__Handle;
 
 const char* agora_rtc__IRtcEngineEventHandlerEx__eventHandlerType(agora_rtc__IRtcEngineEventHandlerEx__Handle handle);
@@ -3927,6 +4146,7 @@ void agora_rtc__IRtcEngineEventHandlerEx__onUploadLogResult(agora_rtc__IRtcEngin
 void agora_rtc__IRtcEngineEventHandlerEx__onUserAccountUpdated(agora_rtc__IRtcEngineEventHandlerEx__Handle handle,const agora_rtc__RtcConnection__C& connection,agora_rtc__uid_t__C remoteUid,const char* userAccount);
 void agora_rtc__IRtcEngineEventHandlerEx__onSnapshotTaken(agora_rtc__IRtcEngineEventHandlerEx__Handle handle,const agora_rtc__RtcConnection__C& connection,agora_rtc__uid_t__C uid,const char* filePath,int width,int height,int errCode);
 void agora_rtc__IRtcEngineEventHandlerEx__onVideoRenderingTracingResult(agora_rtc__IRtcEngineEventHandlerEx__Handle handle,const agora_rtc__RtcConnection__C& connection,agora_rtc__uid_t__C uid,agora_rtc__MEDIA_TRACE_EVENT__C currentEvent,agora_rtc__VideoRenderingTracingInfo__C tracingInfo);
+
 typedef void* agora_rtc__IRtcEngineEx__Handle;
 
 int agora_rtc__IRtcEngineEx__joinChannelEx(agora_rtc__IRtcEngineEx__Handle handle,const char* token,const agora_rtc__RtcConnection__C& connection,const agora_rtc__ChannelMediaOptions__C& options,agora_rtc__IRtcEngineEventHandler__Handle* eventHandler);

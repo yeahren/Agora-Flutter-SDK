@@ -17,6 +17,7 @@ import {
   TerraContext,
   ParseResult,
   RenderResult,
+  TerraNode,
 } from "@agoraio-extensions/terra-core";
 
 function checkPropertyEq(obj: any, key: string, value: any): boolean {
@@ -220,6 +221,7 @@ const templateAsPointer = ["agora_refptr", "Optional"];
 const renameType = new Map([
   ["util::AString", "char *"],
   ["agora::util::AString&", "char *"],
+  ["base::IAgoraService*", "base__IAgoraService__Handle"],
 ]);
 
 
@@ -293,7 +295,7 @@ function toCNameWithType(
 
 
 
-    return cName;
+  return cName;
 }
 
 function toCName(node: CXXTerraNode, cnameSurffix: string = "C"): string {
@@ -484,6 +486,75 @@ function preProcessParseResult(parseResult: ParseResult): ParseResult {
   return parseResult;
 }
 
+function reorderNodes(parseResult: ParseResult, nodes: CXXTerraNode[]): CXXTerraNode[] {
+  let visitedNodes = new Map<CXXTerraNode, CXXTerraNode[]>();
+  let newNodes = nodes;
+  for (let i = 0; i < newNodes.length; i++) {
+    let node = newNodes[i];
+    if (!visitedNodes.has(node)) {
+      visitedNodes.set(node, []);
+    }
+
+    if (node.__TYPE == CXXTYPE.Clazz || node.__TYPE == CXXTYPE.Struct) {
+      (node as Clazz).member_variables.forEach((it) => {
+        if (!it.type.is_builtin_type) {
+          let foundNode = parseResult.resolveNodeByType(it.type);
+          if (!visitedNodes.has(foundNode)) {
+            visitedNodes.get(node)?.push(foundNode);
+          }
+        }
+
+      });
+
+      (node as Clazz).methods.forEach((it) => {
+        it.parameters.forEach((it) => {
+          if (!it.type.is_builtin_type) {
+            let foundNode = parseResult.resolveNodeByType(it.type);
+            if (!visitedNodes.has(foundNode)) {
+              visitedNodes.get(node)?.push(foundNode);
+            }
+          }
+        });
+      });
+    }
+  }
+
+  for (let key of visitedNodes.keys()) {
+    if (visitedNodes.get(key)?.length == 0) {
+      visitedNodes.delete(key);
+    }
+  }
+
+  let reorderedNodes: CXXTerraNode[] = [];
+
+  for (let key of visitedNodes.keys()) {
+
+    let index = newNodes.findIndex((it) => it == key);
+
+    let reorderNodes = visitedNodes.get(key)!.filter((it) => !reorderedNodes.includes(it));
+
+    for (let n of reorderNodes) {
+      let i = newNodes.findIndex((it) => it == n);
+      if (i > index) {
+        newNodes.splice(i, 1);
+      }
+    }
+
+
+    newNodes = [
+      ...newNodes.slice(0, index),
+      ...reorderNodes,
+      ...newNodes.slice(index),
+    ]
+
+    reorderedNodes = reorderedNodes.concat(reorderNodes);
+
+  }
+
+
+  return newNodes;
+}
+
 export default function RtcCRenderer(
   terraContext: TerraContext,
   args: any,
@@ -494,6 +565,8 @@ export default function RtcCRenderer(
   let allNodes = (preProcessParseResult(parseResult).nodes as CXXFile[])
     .map((it) => it.nodes)
     .flat();
+
+  allNodes = reorderNodes(parseResult, allNodes);
 
   // let allTypeAlias =
   //     allNodes.filter((it) => it.__TYPE == CXXTYPE.TypeAlias);
@@ -533,6 +606,8 @@ export default function RtcCRenderer(
 
 #include <stdint.h>
 #include <stddef.h>
+
+typedef void* base__IAgoraService__Handle;
 
 ${output}
 

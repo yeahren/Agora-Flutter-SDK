@@ -366,15 +366,6 @@ function cppStruct2CStruct(parseResult: ParseResult, structt: Struct): string {
   let structName = toCName(structt);
   let structContent = "";
   let mvs = structt.member_variables.map((it) => {
-    // let type = toCNameWithType(parseResult, it.type, name);
-    // let name = it.name;
-    // if (it.type.is_builtin_type || isStdIntType(it.type.name)) {
-    //     type = it.type.source;
-    // } else {
-    //     type = toCName(it.type);
-    // }
-
-    // return `${type} ${name};`;
     return `${toCNameWithType(parseResult, it.type, it.name)};`;
   });
   structContent = mvs.join("\n");
@@ -389,11 +380,9 @@ function cppEnum2CEnum(enumz: Enumz): string {
     let found = enum_constants.filter((it) => it != currentEnumconstant && (constantValue == it.name || constantValue.includes(it.name)));
     if (found) {
       let returnConstantValue = constantValue;
-      console.log('constantValue: ' + constantValue);
       for (let ec of found) {
         returnConstantValue = returnConstantValue.replace(ec.name, `${enumName}__${ec.name}`);
       }
-      console.log('returnConstantValue: ' + returnConstantValue);
       return returnConstantValue;
     }
 
@@ -625,10 +614,6 @@ function cpp2c(parseResult: ParseResult, cxxFile: CXXFile): RenderResult {
     #endif// ${defineH}
     `;
 
-
-
-
-
   return {
     file_name: `${fileName}_C.h`,
     file_content: output,
@@ -649,21 +634,6 @@ export default function RtcCRenderer(
     .flat();
 
   allNodes = reorderNodes(parseResult, allNodes);
-
-  // let allTypeAlias =
-  //     allNodes.filter((it) => it.__TYPE == CXXTYPE.TypeAlias);
-  // let allTypeAliasList = allTypeAlias.map((it) => cppTypeAlias2CTypeAlias(it as TypeAlias));
-  // output += allTypeAliasList.join('\n');
-
-  // let allStructs =
-  //     allNodes.filter((it) => it.__TYPE == CXXTYPE.Struct);
-  // let allCStructList = allStructs.map((it) => cppStruct2CStruct(it as Struct));
-  // output += allCStructList.join('\n');
-
-  // let allEnums =
-  //     allNodes.filter((it) => it.__TYPE == CXXTYPE.Enumz);
-  // let allCEnumList = allEnums.map((it) => cppEnum2CEnum(it as Enumz));
-  // output += allCEnumList.join('\n');
 
   output = allNodes
     .map((it) => {
@@ -695,8 +665,6 @@ export default function RtcCRenderer(
 
   #endif// AGORA_RTC_C_H_
   `;
-
-
 
   // return parseResult.nodes.map((it) => cpp2c(parseResult, it as CXXFile));
 

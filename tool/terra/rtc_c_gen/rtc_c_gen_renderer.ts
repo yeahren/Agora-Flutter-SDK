@@ -243,7 +243,6 @@ function toCNameWithType(
   let isPointer = type.kind == SimpleTypeKind.pointer_t;
   let isRef = type.kind == SimpleTypeKind.reference_t;
   let isNeedAppendName = appendName.length > 0;
-  console.log(`appendName: ${appendName}, isNeedAppendName: ${isNeedAppendName}`);
 
   let suffix = node.__TYPE == CXXTYPE.Clazz ? "Handle" : cnameSurffix;
 
@@ -385,14 +384,32 @@ function cppStruct2CStruct(parseResult: ParseResult, structt: Struct): string {
 }
 
 function cppEnum2CEnum(enumz: Enumz): string {
+  function _adjustConstant(enumName: string, enum_constants: EnumConstant[], currentEnumconstant: EnumConstant): string {
+    let constantValue = currentEnumconstant.value;
+    let found = enum_constants.filter((it) => it != currentEnumconstant && (constantValue == it.name || constantValue.includes(it.name)));
+    if (found) {
+      let returnConstantValue = constantValue;
+      console.log('constantValue: ' + constantValue);
+      for (let ec of found) {
+        returnConstantValue = returnConstantValue.replace(ec.name, `${enumName}__${ec.name}`);
+      }
+      console.log('returnConstantValue: ' + returnConstantValue);
+      return returnConstantValue;
+    }
+
+    return constantValue;
+  }
+
   let enumName = toCName(enumz);
   let enumContent = "";
   let ecs = enumz.enum_constants.map((it) => {
     let name = it.name;
     let value = it.value;
-    let enumConstant = name;
+    // Explicitly concat the enum name to avoid the name conflict in C
+    let enumConstant = `${enumName}__${name}`;
     if (value) {
-      enumConstant += `= ${value}`;
+      // enumConstant += `= ${value}`;
+      enumConstant += `= ${_adjustConstant(enumName, enumz.enum_constants, it)}`;
     }
 
     enumConstant += ",";
@@ -625,13 +642,13 @@ export default function RtcCRenderer(
 ): RenderResult[] {
   let output = "";
 
-  preProcessParseResult(parseResult);
+  // preProcessParseResult(parseResult);
 
-  // let allNodes = (preProcessParseResult(parseResult).nodes as CXXFile[])
-  //   .map((it) => it.nodes)
-  //   .flat();
+  let allNodes = (preProcessParseResult(parseResult).nodes as CXXFile[])
+    .map((it) => it.nodes)
+    .flat();
 
-  // allNodes = reorderNodes(parseResult, allNodes);
+  allNodes = reorderNodes(parseResult, allNodes);
 
   // let allTypeAlias =
   //     allNodes.filter((it) => it.__TYPE == CXXTYPE.TypeAlias);
@@ -648,38 +665,45 @@ export default function RtcCRenderer(
   // let allCEnumList = allEnums.map((it) => cppEnum2CEnum(it as Enumz));
   // output += allCEnumList.join('\n');
 
-  //   output = allNodes
-  //     .map((it) => {
-  //       switch (it.__TYPE) {
-  //         case CXXTYPE.TypeAlias:
-  //           return cppTypeAlias2CTypeAlias(parseResult, it as TypeAlias);
-  //         case CXXTYPE.Struct:
-  //           return cppStruct2CStruct(parseResult, it as Struct);
-  //         case CXXTYPE.Enumz:
-  //           return cppEnum2CEnum(it as Enumz);
-  //         case CXXTYPE.Clazz:
-  //           return cppClass2CFunctions(parseResult, it as Clazz);
-  //         default:
-  //           return "";
-  //       }
-  //     })
-  //     .join("\n");
+  output = allNodes
+    .map((it) => {
+      switch (it.__TYPE) {
+        case CXXTYPE.TypeAlias:
+          return cppTypeAlias2CTypeAlias(parseResult, it as TypeAlias);
+        case CXXTYPE.Struct:
+          return cppStruct2CStruct(parseResult, it as Struct);
+        case CXXTYPE.Enumz:
+          return cppEnum2CEnum(it as Enumz);
+        case CXXTYPE.Clazz:
+          return cppClass2CFunctions(parseResult, it as Clazz);
+        default:
+          return "";
+      }
+    })
+    .join("\n");
 
-  //   output = `
-  // #ifndef AGORA_RTC_C_H_
-  // #define AGORA_RTC_C_H_
+  output = `
+  #ifndef AGORA_RTC_C_H_
+  #define AGORA_RTC_C_H_
 
-  // #include <stdint.h>
-  // #include <stddef.h>
+  #include <stdint.h>
+  #include <stddef.h>
 
-  // typedef void* base__IAgoraService__Handle;
+  typedef void* base__IAgoraService__Handle;
 
-  // ${output}
+  ${output}
 
-  // #endif// AGORA_RTC_C_H_
-  // `;
+  #endif// AGORA_RTC_C_H_
+  `;
 
 
 
-  return parseResult.nodes.map((it) => cpp2c(parseResult, it as CXXFile));
+  // return parseResult.nodes.map((it) => cpp2c(parseResult, it as CXXFile));
+
+  return [
+    {
+      file_name: "rtc_c.h",
+      file_content: output,
+    },
+  ];
 }

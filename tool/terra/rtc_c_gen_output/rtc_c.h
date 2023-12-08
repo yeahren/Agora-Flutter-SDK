@@ -1487,7 +1487,7 @@ typedef struct agora_rtc__EncryptionConfig__C
 {
   agora_rtc__ENCRYPTION_MODE__C encryptionMode;
   const char *encryptionKey;
-  uint8_t encryptionKdfSalt[8];
+  uint8_t encryptionKdfSalt[32];
 } agora_rtc__EncryptionConfig__C;
 
 typedef enum agora_rtc__ENCRYPTION_ERROR_TYPE__C
@@ -1783,7 +1783,7 @@ typedef struct agora_media_base__AudioPcmFrame__C
   int sample_rate_hz_;
   size_t num_channels_;
   agora_rtc__BYTES_PER_SAMPLE__C bytes_per_sample;
-  int16_t data_[16];
+  int16_t data_[3840];
 } agora_media_base__AudioPcmFrame__C;
 
 typedef enum agora_media_base__AUDIO_DUAL_MONO_MODE__C

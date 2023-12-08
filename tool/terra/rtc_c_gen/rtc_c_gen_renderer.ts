@@ -20,44 +20,45 @@ import {
   RenderResult,
   TerraNode,
 } from "@agoraio-extensions/terra-core";
+import { checkObjInclude } from "@agoraio-extensions/terra_shared_configs";
 
 import path from "path";
 
-function checkPropertyEq(obj: any, key: string, value: any): boolean {
-  if (!obj.hasOwnProperty(key)) {
-    return false;
-  }
+// function checkPropertyEq(obj: any, key: string, value: any): boolean {
+//   if (!obj.hasOwnProperty(key)) {
+//     return false;
+//   }
 
-  let eq = obj[key] == value;
+//   let eq = obj[key] == value;
 
-  if (!eq && typeof value === "string") {
-    eq = new RegExp(value).test(obj[key]);
-  }
+//   if (!eq && typeof value === "string") {
+//     eq = new RegExp(value).test(obj[key]);
+//   }
 
-  return eq;
-}
+//   return eq;
+// }
 
-function checkObjInclude(obj1: any, obj2: any): boolean {
-  let isIncluded = true;
+// function checkObjInclude(obj1: any, obj2: any): boolean {
+//   let isIncluded = true;
 
-  if (!obj2) {
-    return isIncluded;
-  }
+//   if (!obj2) {
+//     return isIncluded;
+//   }
 
-  for (let k2 of Object.keys(obj2)) {
-    let v1 = obj1[k2];
-    let v2 = obj2[k2];
-    if (v1) {
-      if (typeof v1 === "object" && typeof v2 === "object") {
-        isIncluded = isIncluded && checkObjInclude(v1, v2);
-      } else {
-        isIncluded = isIncluded && checkPropertyEq(obj1, k2, obj2[k2]);
-      }
-    }
-  }
+//   for (let k2 of Object.keys(obj2)) {
+//     let v1 = obj1[k2];
+//     let v2 = obj2[k2];
+//     if (v1) {
+//       if (typeof v1 === "object" && typeof v2 === "object") {
+//         isIncluded = isIncluded && checkObjInclude(v1, v2);
+//       } else {
+//         isIncluded = isIncluded && checkPropertyEq(obj1, k2, obj2[k2]);
+//       }
+//     }
+//   }
 
-  return isIncluded;
-}
+//   return isIncluded;
+// }
 
 const nodesToRemove = [
   {
@@ -433,6 +434,79 @@ function cppClass2CFunctions(parseResult: ParseResult, clazz: Clazz): string {
   return output;
 }
 
+function functionSignature(parseResult: ParseResult, clazz: Clazz, func: MemberFunction): string {
+  let nativeHandleName = toCName(clazz, "Handle");
+  let functionName = toCName(clazz, func.name);
+  let returnType = toCNameWithType(parseResult, func.return_type);
+  let args = func.parameters.map(
+    (it) => toCNameWithType(parseResult, it.type, it.name)
+  );
+  args = [`${nativeHandleName} handle`, ...args];
+  return `${returnType} ${functionName}(${args.join(",")})`;
+}
+
+function objInitFromC(parseResult: ParseResult, cStructName: string, structt: Struct): readonly [string, string] {
+  let initList: string[] = [];
+  let theName = `the${structt.realName}`;
+  initList.push(`${structt.fullName} ${theName};`);
+  structt.member_variables.forEach((it) => {
+    if (it.type.is_builtin_type || isStdIntType(it.type.name)) {
+      initList.push(`${theName}.${it.name} = ${cStructName}.${it.name};`);
+    } else {
+      let resolvedType = parseResult.resolveNodeByType(it.type);
+      if (resolvedType.__TYPE == CXXTYPE.Struct) {
+        let [first, second] = objInitFromC(parseResult, `${cStructName}.${it.name}`, resolvedType as Struct);
+        initList.unshift(second);
+        initList.push(`${theName}.${it.name} = ${first};`);
+      } else {
+        initList.push(`${theName}.${it.name} = ${cStructName}.${it.name};`);
+      }
+    }
+  });
+  return [theName, initList.join('\n')];
+}
+
+function cppClass2CFunctionImpls(parseResult: ParseResult, clazz: Clazz): string {
+  // agora::rtc::RtcConnection theConnection;
+  // theConnection.localUid = connection.localUid;
+  // theConnection.channelName = connection.channelName;
+  let output = clazz.methods
+    .map((method) => {
+      // let ps = it.parameters.map((it) => it.name).join(',');
+      let ps: string[] = [];
+      let objInitList: string[] = [];
+
+
+      method.parameters.forEach((p) => {
+        let pn = p.name;
+
+        let pt = parseResult.resolveNodeByType(p.type);
+        if (pt.__TYPE == CXXTYPE.Struct) {
+
+          let [theName, il] = objInitFromC(parseResult, pn, pt as Struct);
+          objInitList.push(il);
+          ps.push(theName);
+        } else {
+          ps.push(pn);
+
+        }
+
+
+
+      });
+
+
+      return `${functionSignature(parseResult, clazz, method)} {
+        ${objInitList.join('\n')}
+        reinterpret_cast<${clazz.fullName} *>(handle)->${method.name}(${ps.join(',')});
+      }
+      `;
+    })
+    .join("\n");
+
+  return output;
+}
+
 function filterNodes(sourceNodes: any[], nodesToFilter: any[]): CXXTerraNode[] {
   return sourceNodes.filter((it) => {
     // let nr = nodesToRemove.filter((node) => node.__TYPE == CXXTYPE.CXXFile);
@@ -625,7 +699,7 @@ export default function RtcCRenderer(
   args: any,
   parseResult: ParseResult
 ): RenderResult[] {
-  let output = "";
+  // let output = "";
 
   // preProcessParseResult(parseResult);
 
@@ -635,7 +709,7 @@ export default function RtcCRenderer(
 
   allNodes = reorderNodes(parseResult, allNodes);
 
-  output = allNodes
+  let headerFileOut = allNodes
     .map((it) => {
       switch (it.__TYPE) {
         case CXXTYPE.TypeAlias:
@@ -652,7 +726,7 @@ export default function RtcCRenderer(
     })
     .join("\n");
 
-  output = `
+  headerFileOut = `
   #ifndef AGORA_RTC_C_H_
   #define AGORA_RTC_C_H_
 
@@ -661,17 +735,32 @@ export default function RtcCRenderer(
 
   typedef void* base__IAgoraService__Handle;
 
-  ${output}
+  ${headerFileOut}
 
   #endif// AGORA_RTC_C_H_
   `;
 
-  // return parseResult.nodes.map((it) => cpp2c(parseResult, it as CXXFile));
+  let implFileOut = `
+#include "rtc_c.h"
+
+${function () {
+      return allNodes
+        .filter((it) => it.__TYPE == CXXTYPE.Clazz)
+        .map((it) => {
+          return cppClass2CFunctionImpls(parseResult, it as Clazz);
+        })
+        .join("\n");
+    }()}
+`;
 
   return [
     {
       file_name: "rtc_c.h",
-      file_content: output,
+      file_content: headerFileOut,
+    },
+    {
+      file_name: "rtc_c.cc",
+      file_content: implFileOut,
     },
   ];
 }

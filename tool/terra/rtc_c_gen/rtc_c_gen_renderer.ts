@@ -755,11 +755,11 @@ ${function () {
 
   return [
     {
-      file_name: "rtc_c.h",
+      file_name: "agora_rtc_c.h",
       file_content: headerFileOut,
     },
     {
-      file_name: "rtc_c.cc",
+      file_name: "agora_rtc_c.cc",
       file_content: implFileOut,
     },
   ];

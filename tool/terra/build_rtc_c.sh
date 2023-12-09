@@ -9,6 +9,6 @@ pushd ${MY_PATH}
 
 npm exec terra -- run \
     --config ${PROJECT_ROOT}/tool/terra/terra_config_rtc_c.yaml  \
-    --output-dir=${MY_PATH}/rtc_c_gen_output
+    --output-dir=${PROJECT_ROOT}/android/src/main/cpp/agora_rtc_c/gen
 
 popd

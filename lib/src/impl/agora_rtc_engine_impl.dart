@@ -386,7 +386,7 @@ class RtcEngineImpl extends rtc_engine_ex_binding.RtcEngineExImpl
     }());
 
     await irisMethodChannel.initilize(args);
-    await _initializeInternal(context);
+    // await _initializeInternal(context);
 
     await super.initialize(context);
 

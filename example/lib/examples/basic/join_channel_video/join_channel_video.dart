@@ -126,7 +126,7 @@ class _State extends State<JoinChannelVideo> {
             AgoraVideoView(
               controller: VideoViewController(
                 rtcEngine: _engine,
-                canvas: const VideoCanvas(uid: 0),
+                canvas: const VideoCanvas(uid: 0, setupMode: VideoViewSetupMode.videoViewSetupAdd),
                 useFlutterTexture: _isUseFlutterTexture,
                 useAndroidSurfaceView: _isUseAndroidSurfaceView,
               ),

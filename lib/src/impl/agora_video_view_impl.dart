@@ -149,7 +149,7 @@ class _AgoraRtcRenderPlatformViewState extends State<AgoraRtcRenderPlatformView>
     if (!oldWidget.controller.isSame(widget.controller)) {
       debugPrint(
           '[_AgoraRtcRenderPlatformViewState] didUpdateWidget not same, extraData: ${widget.extraData}, canvas: ${widget.controller.canvas.toJson()}, connection: ${widget.controller.connection?.toJson()}, _nativeViewIntPtr: ${_nativeViewIntPtr}');
-      await oldWidget.controller.disposeRender();
+      await oldWidget.controller.disposeRender(_nativeViewIntPtr);
       await _setupVideo();
     } else {
       _controller(widget.controller).updateController(oldWidget.controller);
@@ -185,7 +185,7 @@ class _AgoraRtcRenderPlatformViewState extends State<AgoraRtcRenderPlatformView>
       debugPrint(
           '[AgoraVideoView] error when widget.controller.setupView: ${e.toString()}');
     } finally {
-      await _controller(widget.controller).dePlatformRenderRef(_platformViewId);
+      // await _controller(widget.controller).dePlatformRenderRef(_platformViewId);
     }
 
     widget.onAgoraVideoViewCreated?.call(_nativeViewIntPtr);
@@ -220,7 +220,14 @@ class _AgoraRtcRenderPlatformViewState extends State<AgoraRtcRenderPlatformView>
     _isDisposed = true;
     _nativeViewIntPtr = 0;
 
-    await widget.controller.disposeRender();
+    try {
+      final nativeViewIntPtr =
+          (await getMethodChannel()!.invokeMethod<int>('getNativeViewPtr'))!;
+          print('nativeViewIntPtr: $nativeViewIntPtr');
+      await widget.controller.disposeRender(nativeViewIntPtr);
+    } finally {
+      // await _controller(widget.controller).dePlatformRenderRef(_platformViewId);
+    }
   }
 }
 
@@ -291,7 +298,8 @@ class _AgoraRtcRenderTextureState extends State<AgoraRtcRenderTexture>
   Future<void> _didUpdateWidget(
       covariant AgoraRtcRenderTexture oldWidget) async {
     if (!oldWidget.controller.isSame(widget.controller)) {
-      await oldWidget.controller.disposeRender();
+      // The `nativeViewPtr` is unused on Flutter texture rendering
+      await oldWidget.controller.disposeRender(0);
       await _initialize();
     } else {
       _controller(widget.controller).updateController(oldWidget.controller);
@@ -310,7 +318,8 @@ class _AgoraRtcRenderTextureState extends State<AgoraRtcRenderTexture>
 
   @override
   void dispose() {
-    widget.controller.disposeRender();
+    // The `nativeViewPtr` is unused on Flutter texture rendering
+    widget.controller.disposeRender(0);
     super.dispose();
   }
 

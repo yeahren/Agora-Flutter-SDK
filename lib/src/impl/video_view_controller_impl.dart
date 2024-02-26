@@ -75,7 +75,7 @@ mixin VideoViewControllerBaseMixin implements VideoViewControllerBase {
   Future<void> dispose() async {}
 
   @protected
-  Future<void> disposeRenderInternal() async {
+  Future<void> disposeRenderInternal(int nativeViewPtr) async {
     if (shouldUseFlutterTexture) {
       await rtcEngine.globalVideoViewController
           ?.destroyTextureRender(getTextureId());
@@ -83,14 +83,34 @@ mixin VideoViewControllerBaseMixin implements VideoViewControllerBase {
       return;
     }
 
+    Object viewHandle = kNullViewHandle;
+    VideoCanvas newVideoCanvas = canvas;
+    if (!kIsWeb) {
+      if (canvas.setupMode == VideoViewSetupMode.videoViewSetupAdd) {
+        viewHandle = nativeViewPtr;
+
+        newVideoCanvas = VideoCanvas(
+          view: nativeViewPtr,
+          renderMode: newVideoCanvas.renderMode,
+          mirrorMode: newVideoCanvas.mirrorMode,
+          uid: newVideoCanvas.uid,
+          sourceType: newVideoCanvas.sourceType,
+          cropArea: newVideoCanvas.cropArea,
+          setupMode: VideoViewSetupMode.videoViewSetupRemove,
+          mediaPlayerId: newVideoCanvas.mediaPlayerId,
+        );
+      }
+    }
+
+print('disposeRenderInternal viewHandle: ${viewHandle}, nativeViewPtr: $nativeViewPtr, newVideoCanvas: ${newVideoCanvas.toJson()}');
     await rtcEngine.globalVideoViewController
-        ?.setupVideoView(kNullViewHandle, canvas, connection: connection);
+        ?.setupVideoView(viewHandle, newVideoCanvas, connection: connection);
   }
 
   @internal
   @override
-  Future<void> disposeRender() async {
-    await disposeRenderInternal();
+  Future<void> disposeRender(int nativeViewPtr) async {
+    await disposeRenderInternal(nativeViewPtr);
   }
 
   @protected

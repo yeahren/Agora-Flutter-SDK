@@ -48,7 +48,7 @@ abstract class VideoViewControllerBase {
   Future<void> initializeRender();
 
   @internal
-  Future<void> disposeRender();
+  Future<void> disposeRender(int nativeViewPtr);
 
   /// @nodoc
   Future<void> dispose();

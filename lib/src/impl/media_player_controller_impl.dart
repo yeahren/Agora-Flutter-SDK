@@ -371,9 +371,9 @@ class MediaPlayerControllerImpl
   }
 
   @override
-  Future<void> disposeRenderInternal() async {
+  Future<void> disposeRenderInternal(int nativeViewPtr) async {
     if (shouldUseFlutterTexture) {
-      await super.disposeRenderInternal();
+      await super.disposeRenderInternal(nativeViewPtr);
     }
   }
 

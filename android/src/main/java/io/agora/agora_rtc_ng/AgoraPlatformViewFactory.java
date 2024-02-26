@@ -110,7 +110,7 @@ public class AgoraPlatformViewFactory extends PlatformViewFactory {
         @Override
         public void dispose() {
             this.controller.dePlatformRenderRef(this.platformViewId);
-            viewRef = null;
+            // viewRef = null;
             parentView.removeAllViews();
             parentView = null;
             innerView = null;

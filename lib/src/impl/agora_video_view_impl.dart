@@ -29,6 +29,7 @@ class AgoraVideoViewState extends State<AgoraVideoView> {
         key: widget.key,
         controller: widget.controller,
         onAgoraVideoViewCreated: widget.onAgoraVideoViewCreated,
+        extraData: widget.extraData,
       );
     }
 
@@ -53,6 +54,7 @@ class AgoraVideoViewState extends State<AgoraVideoView> {
       key: widget.key,
       controller: widget.controller,
       onAgoraVideoViewCreated: widget.onAgoraVideoViewCreated,
+      extraData: widget.extraData,
     );
   }
 }
@@ -62,11 +64,14 @@ class AgoraRtcRenderPlatformView extends StatefulWidget {
     Key? key,
     required this.controller,
     this.onAgoraVideoViewCreated,
+    this.extraData,
   }) : super(key: key);
 
   final VideoViewControllerBase controller;
 
   final AgoraVideoViewCreatedCallback? onAgoraVideoViewCreated;
+
+  final String? extraData;
 
   @override
   State<AgoraRtcRenderPlatformView> createState() =>
@@ -90,6 +95,9 @@ class _AgoraRtcRenderPlatformViewState extends State<AgoraRtcRenderPlatformView>
   void initState() {
     super.initState();
 
+    debugPrint(
+        '[_AgoraRtcRenderPlatformViewState] initState, extraData: ${widget.extraData}, canvas: ${widget.controller.canvas.toJson()}, connection: ${widget.controller.connection?.toJson()}, _nativeViewIntPtr: ${_nativeViewIntPtr}');
+
     if (kIsWeb) {
       _viewType = _viewTypeAgoraSurfaceView;
     } else if (defaultTargetPlatform == TargetPlatform.android) {
@@ -110,6 +118,8 @@ class _AgoraRtcRenderPlatformViewState extends State<AgoraRtcRenderPlatformView>
   @override
   void deactivate() {
     super.deactivate();
+    debugPrint(
+        '[_AgoraRtcRenderPlatformViewState] deactivate, extraData: ${widget.extraData}, canvas: ${widget.controller.canvas.toJson()}, connection: ${widget.controller.connection?.toJson()}, _nativeViewIntPtr: ${_nativeViewIntPtr}');
     if (_listener != null) {
       _controller(widget.controller)
           .removeInitializedCompletedListener(_listener!);
@@ -119,6 +129,8 @@ class _AgoraRtcRenderPlatformViewState extends State<AgoraRtcRenderPlatformView>
 
   @override
   void dispose() {
+    debugPrint(
+        '[_AgoraRtcRenderPlatformViewState] dispose, extraData: ${widget.extraData}, canvas: ${widget.controller.canvas.toJson()}, connection: ${widget.controller.connection?.toJson()}, _nativeViewIntPtr: ${_nativeViewIntPtr}');
     _disposeRender();
     super.dispose();
   }
@@ -127,12 +139,16 @@ class _AgoraRtcRenderPlatformViewState extends State<AgoraRtcRenderPlatformView>
   void didUpdateWidget(covariant AgoraRtcRenderPlatformView oldWidget) {
     super.didUpdateWidget(oldWidget);
 
+    debugPrint(
+        '[_AgoraRtcRenderPlatformViewState] didUpdateWidget, extraData: ${widget.extraData}, canvas: ${widget.controller.canvas.toJson()}, connection: ${widget.controller.connection?.toJson()}, _nativeViewIntPtr: ${_nativeViewIntPtr}');
     _didUpdateWidget(oldWidget);
   }
 
   Future<void> _didUpdateWidget(
       covariant AgoraRtcRenderPlatformView oldWidget) async {
     if (!oldWidget.controller.isSame(widget.controller)) {
+      debugPrint(
+          '[_AgoraRtcRenderPlatformViewState] didUpdateWidget not same, extraData: ${widget.extraData}, canvas: ${widget.controller.canvas.toJson()}, connection: ${widget.controller.connection?.toJson()}, _nativeViewIntPtr: ${_nativeViewIntPtr}');
       await oldWidget.controller.disposeRender();
       await _setupVideo();
     } else {
@@ -152,6 +168,8 @@ class _AgoraRtcRenderPlatformViewState extends State<AgoraRtcRenderPlatformView>
   }
 
   Future<void> _setupNativeView() async {
+    debugPrint(
+        '[_AgoraRtcRenderPlatformViewState] _setupNativeView, extraData: ${widget.extraData}, canvas: ${widget.controller.canvas.toJson()}, connection: ${widget.controller.connection?.toJson()}, _nativeViewIntPtr: ${_nativeViewIntPtr}, _isDisposed: $_isDisposed');
     if (_isDisposed) {
       return;
     }

@@ -30,8 +30,17 @@ abstract class GlobalVideoViewControllerPlatfrom {
           int videoSourceType, int videoViewSetupMode) =>
       SynchronousFuture(kTextureNotInit);
 
+  Future<Map<Object, Object>> createTextureRenderer() =>
+      SynchronousFuture(const {});
+
   /// Call `IrisVideoFrameBufferManager.DisableVideoFrameBuffer` in the native side
   Future<void> destroyTextureRender(int textureId) => SynchronousFuture(null);
+
+  // Future<Object> attachNativeView() => SynchronousFuture(0);
+
+  Future<Object> createNativeView() => SynchronousFuture(0);
+
+  Future<void> deleteNativeView(Object handle) => SynchronousFuture(null);
 
   /// Decrease the ref count of the native view(`UIView` in iOS) of the `platformViewId`.
   /// Put this function here since the the `MethodChannel` in the `AgoraVideoView` is released

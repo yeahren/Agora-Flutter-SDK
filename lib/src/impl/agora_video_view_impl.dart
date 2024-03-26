@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:agora_rtc_engine/src/agora_base.dart';
 import 'package:agora_rtc_engine/src/agora_media_base.dart';
 import 'package:agora_rtc_engine/src/agora_rtc_engine.dart';
 import 'package:agora_rtc_engine/src/agora_rtc_engine_ex.dart';
+import 'package:agora_rtc_engine/src/impl/agora_rtc_engine_impl.dart';
 
 import 'package:agora_rtc_engine/src/impl/video_view_controller_impl.dart';
 import 'package:agora_rtc_engine/src/render/agora_video_view.dart';
@@ -13,6 +16,7 @@ import 'package:flutter/scheduler.dart' show SchedulerBinding;
 import 'package:flutter/services.dart';
 
 import 'agora_rtc_renderer.dart';
+import 'platform/global_video_view_controller.dart';
 
 // ignore_for_file: public_member_api_docs
 
@@ -566,5 +570,378 @@ class _SizeChangedAwareWidget extends SingleChildRenderObjectWidget {
   void updateRenderObject(BuildContext context,
       covariant _SizeChangedAwareRenderObject renderObject) {
     renderObject.onChange = onChange;
+  }
+}
+
+class _NativeViewRef {
+  _NativeViewRef(this._globalVideoViewController) {
+    _initNativeView();
+  }
+
+  final GlobalVideoViewControllerPlatfrom _globalVideoViewController;
+
+  int _refCount = 0;
+
+  Object? _nativeHandle;
+
+  Completer<void>? _nativeHandleCompleter;
+
+  Future<void> _initNativeView() async {
+    _nativeHandleCompleter = Completer();
+    
+    
+    
+    
+    final result =  await _globalVideoViewController.createTextureRenderer();
+    final textureId = result['textureId'] ?? kTextureNotInit;
+    final nativeTextureHandle = result['native_texture_handle'] ?? 0;
+
+    _nativeHandleCompleter!.complete();
+  }
+
+  Future<Object?> getHandle() async {
+    if (_refCount == 0) {
+      return null;
+    }
+
+    if (_nativeHandle != null) {
+      return _nativeHandle;
+    }
+
+    // Wait for the `_nativeHandle` created.
+    await _nativeHandleCompleter?.future;
+    // If disposed, return null
+    if (_refCount == 0) {
+      return null;
+    }
+    assert(_nativeHandle != null);
+    return _nativeHandle;
+  }
+
+  void _unref() {
+    --_refCount;
+    if (_refCount == 0) {
+      dispose();
+    }
+  }
+
+  void _addRef() {
+    ++_refCount;
+  }
+
+  void dispose() {
+    _refCount = 0;
+    _globalVideoViewController.deleteNativeView(_nativeHandle!);
+  }
+}
+
+class _AndroidTextureRenderingController {
+  _AndroidTextureRenderingController(
+      this._rtcEngine, this._canvas, this._connection) {
+    _nativeViewRef = _NativeViewRef(_rtcEngineImpl.globalVideoViewController);
+  }
+
+  final RtcEngine _rtcEngine;
+  RtcEngineImpl get _rtcEngineImpl => (_rtcEngine as RtcEngineImpl);
+
+  final VideoCanvas _canvas;
+
+  final RtcConnection? _connection;
+
+  late final _NativeViewRef _nativeViewRef;
+
+  VoidCallback? _listener;
+
+  Future<void> _setupRenderer() async {
+    if (_rtcEngineImpl.isInitialzed) {
+      _setupRendererInternal();
+      return;
+    }
+
+    _listener ??= () {
+      _rtcEngineImpl.removeInitializedCompletedListener(_listener!);
+      _listener = null;
+
+      _setupRendererInternal();
+    };
+    _rtcEngineImpl.addInitializedCompletedListener(_listener!);
+  }
+
+  Future<void> _setupRendererInternal() async {
+    _nativeViewRef._addRef();
+    final viewHandle = await _nativeViewRef.getHandle();
+    if (viewHandle == null) {
+      return;
+    }
+
+    await _rtcEngineImpl.globalVideoViewController
+        .setupVideoView(viewHandle, _canvas, connection: _connection);
+    _nativeViewRef._unref();
+  }
+
+  Future<void> _dispose() async {
+    if (_listener != null) {
+      _rtcEngineImpl.removeInitializedCompletedListener(_listener!);
+    }
+
+    _nativeViewRef._addRef();
+    final viewHandle = await _nativeViewRef.getHandle();
+    if (viewHandle == null) {
+      return;
+    }
+    await _rtcEngineImpl.globalVideoViewController.deleteNativeView(viewHandle);
+    _nativeViewRef._unref();
+
+    _nativeViewRef.dispose();
+  }
+}
+
+class AndroidTextureRenderer extends StatefulWidget {
+  const AndroidTextureRenderer({
+    Key? key,
+    required this.controller,
+    this.onAgoraVideoViewCreated,
+  }) : super(key: key);
+
+  final VideoViewControllerBase controller;
+  final AgoraVideoViewCreatedCallback? onAgoraVideoViewCreated;
+
+  @override
+  State<AgoraRtcRenderTexture> createState() => _AndroidTextureRendererState();
+}
+
+class _AndroidTextureRendererState extends State<AgoraRtcRenderTexture>
+    with RtcRenderMixin {
+  int _width = 0;
+  int _height = 0;
+
+  VoidCallback? _listener;
+
+  _AndroidTextureRenderingController? _controllerInternal;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _initialize();
+  }
+
+  Future<void> _initialize() async {
+    final sourceController = widget.controller;
+    _controllerInternal = _AndroidTextureRenderingController(
+        sourceController.rtcEngine,
+        sourceController.canvas,
+        sourceController.connection);
+
+    // if (!_controllerInternal!.isInitialzed) {
+    //   _listener ??= () {
+    //     _controllerInternal!.removeInitializedCompletedListener(_listener!);
+    //     _listener = null;
+
+    //     _initializeTexture();
+    //   };
+    //   _controllerInternal!.addInitializedCompletedListener(_listener!);
+    // } else {
+    //   await _initializeTexture();
+    // }
+
+    _controllerInternal!._setupRenderer();
+  }
+
+  // Future<void> _initializeTexture() async {
+  //   final oldTextureId = _controllerInternal!.getTextureId();
+  //   await _controllerInternal!.initializeRender();
+  //   final textureId = _controllerInternal!.getTextureId();
+  //   if (oldTextureId != textureId) {
+  //     _width = 0;
+  //     _height = 0;
+  //     // The parameters is no used
+  //     maybeCreateChannel(-1, '');
+  //     widget.onAgoraVideoViewCreated?.call(textureId);
+  //     setState(() {});
+  //   }
+  // }
+
+  @override
+  void didUpdateWidget(covariant AgoraRtcRenderTexture oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    _didUpdateWidget(oldWidget);
+  }
+
+  Future<void> _didUpdateWidget(
+      covariant AgoraRtcRenderTexture oldWidget) async {
+    if (_controllerInternal == null ||
+        _controllerInternal!.getTextureId() == kTextureNotInit) {
+      return;
+    }
+    if (!oldWidget.controller.isSame(widget.controller) &&
+        _controllerInternal != null) {
+      await _controllerInternal!.disposeRender();
+      await _initialize();
+    }
+  }
+
+  @override
+  void deactivate() {
+    super.deactivate();
+    if (_listener != null) {
+      _controllerInternal?.removeInitializedCompletedListener(_listener!);
+      _listener = null;
+    }
+  }
+
+  @override
+  void dispose() {
+    _controllerInternal?.disposeRender();
+    _controllerInternal = null;
+
+    super.dispose();
+  }
+
+  @override
+  void maybeCreateChannel(int viewId, String viewType) {
+    if (_controllerInternal == null) {
+      return;
+    }
+    final textureId = _controllerInternal!.getTextureId();
+
+    methodChannel = MethodChannel('agora_rtc_engine/texture_render_$textureId');
+    methodChannel!.setMethodCallHandler((call) async {
+      if (call.method == 'onSizeChanged') {
+        _width = call.arguments['width'];
+        _height = call.arguments['height'];
+        setState(() {});
+        return true;
+      }
+      return false;
+    });
+  }
+
+  Widget _applyRenderMode(RenderModeType renderMode, Widget child) {
+    if (renderMode == RenderModeType.renderModeFit) {
+      return Container(
+        color: Colors.black,
+        constraints: const BoxConstraints.expand(),
+        child: FittedBox(
+          fit: BoxFit.contain,
+          child: SizedBox(
+            width: _width.toDouble(),
+            height: _height.toDouble(),
+            child: child,
+          ),
+        ),
+      );
+    } else if (renderMode == RenderModeType.renderModeHidden) {
+      return Container(
+        constraints: const BoxConstraints.expand(),
+        child: FittedBox(
+          fit: BoxFit.cover,
+          clipBehavior: Clip.hardEdge,
+          child: SizedBox(
+            width: _width.toDouble(),
+            height: _height.toDouble(),
+            child: child,
+          ),
+        ),
+      );
+    } else {
+      // RenderModeType.renderModeAdaptive
+      return Container(
+        constraints: const BoxConstraints.expand(),
+        child: FittedBox(
+          fit: BoxFit.fill,
+          child: SizedBox(
+            width: _width.toDouble(),
+            height: _height.toDouble(),
+            child: child,
+          ),
+        ),
+      );
+    }
+  }
+
+  bool _isScreenSource(VideoSourceType sourceType) {
+    final sourceTypeInt = sourceType.value();
+    // int value of `VideoSourceType.videoSourceScreen` and `VideoSourceType.videoSourceScreenPrimary` is the same
+    return sourceTypeInt == VideoSourceType.videoSourceScreenPrimary.value() ||
+        sourceTypeInt == VideoSourceType.videoSourceScreenSecondary.value() ||
+        sourceTypeInt == VideoSourceType.videoSourceTranscoded.value();
+  }
+
+  Widget _applyMirrorMode(VideoMirrorModeType mirrorMode, Widget child,
+      VideoSourceType sourceType) {
+    bool enableMirror = true;
+    if (mirrorMode == VideoMirrorModeType.videoMirrorModeDisabled ||
+        _isScreenSource(sourceType)) {
+      enableMirror = false;
+    }
+
+    if (enableMirror) {
+      return Transform.scale(
+        scaleX: -1.0,
+        child: child,
+      );
+    }
+
+    return child;
+  }
+
+  Future<void> _setSizeNative(Size size, Offset position) async {
+    assert(defaultTargetPlatform == TargetPlatform.android);
+    // Call `SurfaceTexture.setDefaultBufferSize` on Android， or the video will be
+    // black screen
+    await methodChannel!.invokeMethod('setSizeNative', {
+      'width': size.width.toInt(),
+      'height': size.height.toInt(),
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Widget result = const SizedBox.expand();
+    if (_controllerInternal == null) {
+      return result;
+    }
+    final controller = _controllerInternal!;
+    if (controller.getTextureId() != kTextureNotInit) {
+      if (_height != 0 && _width != 0) {
+        result = buildTexure(controller.getTextureId());
+        final renderMode =
+            controller.canvas.renderMode ?? RenderModeType.renderModeHidden;
+
+        if (controller.shouldHandlerRenderMode) {
+          result = _applyRenderMode(renderMode, result);
+          VideoMirrorModeType mirrorMode;
+          if (controller.isLocalUid) {
+            mirrorMode = controller.canvas.mirrorMode ??
+                VideoMirrorModeType.videoMirrorModeEnabled;
+          } else {
+            mirrorMode = controller.canvas.mirrorMode ??
+                VideoMirrorModeType.videoMirrorModeDisabled;
+          }
+
+          final sourceType = controller.canvas.sourceType ??
+              VideoSourceType.videoSourceCameraPrimary;
+
+          result = _applyMirrorMode(mirrorMode, result, sourceType);
+        } else {
+          // Fit mode by default if does not need to handle render mode
+          result = _applyRenderMode(RenderModeType.renderModeFit, result);
+        }
+      }
+
+      // Only need to size in native side on Android
+      if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
+        result = _SizeChangedAwareWidget(
+          onChange: (size) {
+            _setSizeNative(size, Offset.zero);
+          },
+          child: result,
+        );
+      }
+    }
+
+    return result;
   }
 }

@@ -94,6 +94,14 @@ class GlobalVideoViewControllerIO extends GlobalVideoViewControllerPlatfrom {
     return textureId ?? kTextureNotInit;
   }
 
+  @override
+  Future<Map<Object, Object>> createTextureRenderer() async {
+    final result = await methodChannel
+        .invokeMethod<Map<Object, Object>>('createTextureRenderer');
+
+    return result ?? const {};
+  }
+
   /// Call `IrisVideoFrameBufferManager.DisableVideoFrameBuffer` in the native side
   @override
   Future<void> destroyTextureRender(int textureId) async {
@@ -111,5 +119,18 @@ class GlobalVideoViewControllerIO extends GlobalVideoViewControllerPlatfrom {
   @override
   Future<void> dePlatformRenderRef(int platformViewId) async {
     await methodChannel.invokeMethod('dePlatfromViewRef', platformViewId);
+  }
+
+  @override
+  Future<Object> createNativeView() async {
+    final viewHandle =
+        await methodChannel.invokeMethod<int>('create_native_view');
+    return viewHandle!;
+  }
+
+  @override
+  Future<void> deleteNativeView(Object handle) async {
+    // The handle is `int` on native
+    await methodChannel.invokeMethod<int>('delete_native_view', handle as int);
   }
 }

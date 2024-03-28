@@ -1,6 +1,10 @@
 package io.agora.agora_rtc_ng;
 
 import android.content.Context;
+import android.graphics.SurfaceTexture;
+import android.os.Handler;
+import android.os.Looper;
+import android.view.Surface;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -98,6 +102,35 @@ class PlatformRenderPool {
     }
 }
 
+class TextureRendererHolder {
+    private final TextureRegistry.SurfaceTextureEntry flutterTexture;
+    private SurfaceTexture flutterSurfaceTexture;
+    private long flutterSurfaceTextureHandle;
+
+    public TextureRendererHolder(
+            TextureRegistry textureRegistry) {
+
+        this.flutterTexture = textureRegistry.createSurfaceTexture();
+        this.flutterSurfaceTexture = this.flutterTexture.surfaceTexture();
+        this.flutterSurfaceTextureHandle = IrisApiEngine.GetJObjectAddress(this.flutterSurfaceTexture);
+    }
+
+    public long getTextureId() {
+        return flutterTexture.id();
+    }
+
+    public long getFlutterSurfaceTextureHandle() {
+
+        return this.flutterSurfaceTextureHandle;
+    }
+
+    public void dispose() {
+        IrisApiEngine.FreeJObjectByAddress(this.flutterSurfaceTextureHandle);
+        flutterSurfaceTextureHandle = 0L;
+        flutterSurfaceTexture = null;
+    }
+}
+
 public class VideoViewController implements MethodChannel.MethodCallHandler {
 
     private final TextureRegistry textureRegistry;
@@ -107,6 +140,8 @@ public class VideoViewController implements MethodChannel.MethodCallHandler {
     private final PlatformRenderPool pool;
 
     private final Map<Long, TextureRenderer> textureRendererMap = new HashMap<>();
+
+    private final Map<Long, TextureRendererHolder> textureRendererHolderMap = new HashMap<>();
 
     VideoViewController(TextureRegistry textureRegistry, BinaryMessenger binaryMessenger) {
         this.textureRegistry = textureRegistry;
@@ -196,6 +231,18 @@ public class VideoViewController implements MethodChannel.MethodCallHandler {
                         videoSourceType,
                         videoViewSetupMode);
                 result.success(textureId);
+                break;
+            }
+            case "createTextureRenderer": {
+                final TextureRendererHolder holder = new TextureRendererHolder(textureRegistry);
+                textureRendererHolderMap.put(holder.getTextureId(), holder);
+
+                final HashMap<String, Object> map = new HashMap<String, Object>(){{
+                    put("textureId", holder.getTextureId());
+                    put("nativeTextureHandle", holder.getFlutterSurfaceTextureHandle());
+                }};
+
+                result.success(map);
                 break;
             }
             case "destroyTextureRender": {

@@ -30,7 +30,7 @@ abstract class GlobalVideoViewControllerPlatfrom {
           int videoSourceType, int videoViewSetupMode) =>
       SynchronousFuture(kTextureNotInit);
 
-  Future<Map<Object, Object>> createTextureRenderer() =>
+  Future<Map<Object?, Object?>> createTextureRenderer() =>
       SynchronousFuture(const {});
 
   /// Call `IrisVideoFrameBufferManager.DisableVideoFrameBuffer` in the native side

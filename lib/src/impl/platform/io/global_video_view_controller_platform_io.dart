@@ -95,9 +95,9 @@ class GlobalVideoViewControllerIO extends GlobalVideoViewControllerPlatfrom {
   }
 
   @override
-  Future<Map<Object, Object>> createTextureRenderer() async {
+  Future<Map<Object?, Object?>> createTextureRenderer() async {
     final result = await methodChannel
-        .invokeMethod<Map<Object, Object>>('createTextureRenderer');
+        .invokeMethod<Map<Object?, Object?>>('createTextureRenderer');
 
     return result ?? const {};
   }
@@ -131,6 +131,6 @@ class GlobalVideoViewControllerIO extends GlobalVideoViewControllerPlatfrom {
   @override
   Future<void> deleteNativeView(Object handle) async {
     // The handle is `int` on native
-    await methodChannel.invokeMethod<int>('delete_native_view', handle as int);
+    // await methodChannel.invokeMethod<int>('delete_native_view', handle as int);
   }
 }

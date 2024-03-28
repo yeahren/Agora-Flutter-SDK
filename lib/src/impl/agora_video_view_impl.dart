@@ -48,6 +48,13 @@ class AgoraVideoViewState extends State<AgoraVideoView> {
     }
 
     if (widget.controller.useFlutterTexture) {
+      if (defaultTargetPlatform == TargetPlatform.android) {
+        return AndroidTextureRenderer(
+          key: widget.key,
+          controller: widget.controller,
+          onAgoraVideoViewCreated: widget.onAgoraVideoViewCreated,
+        );
+      }
       return AgoraRtcRenderTexture(
         key: widget.key,
         controller: widget.controller,
@@ -583,18 +590,17 @@ class _NativeViewRef {
   int _refCount = 0;
 
   Object? _nativeHandle;
+  int get textureId => _textureId ?? kTextureNotInit;
+  int? _textureId;
 
   Completer<void>? _nativeHandleCompleter;
 
   Future<void> _initNativeView() async {
     _nativeHandleCompleter = Completer();
-    
-    
-    
-    
-    final result =  await _globalVideoViewController.createTextureRenderer();
-    final textureId = result['textureId'] ?? kTextureNotInit;
-    final nativeTextureHandle = result['native_texture_handle'] ?? 0;
+
+    final result = await _globalVideoViewController.createTextureRenderer();
+    _textureId = (result['textureId'] ?? kTextureNotInit) as int;
+    _nativeHandle = result['nativeTextureHandle'] ?? 0;
 
     _nativeHandleCompleter!.complete();
   }
@@ -621,7 +627,7 @@ class _NativeViewRef {
   void _unref() {
     --_refCount;
     if (_refCount == 0) {
-      dispose();
+      _dispose();
     }
   }
 
@@ -629,7 +635,7 @@ class _NativeViewRef {
     ++_refCount;
   }
 
-  void dispose() {
+  void _dispose() {
     _refCount = 0;
     _globalVideoViewController.deleteNativeView(_nativeHandle!);
   }
@@ -637,7 +643,7 @@ class _NativeViewRef {
 
 class _AndroidTextureRenderingController {
   _AndroidTextureRenderingController(
-      this._rtcEngine, this._canvas, this._connection) {
+      this._rtcEngine, this._canvas, this._connection, this._onViewReady) {
     _nativeViewRef = _NativeViewRef(_rtcEngineImpl.globalVideoViewController);
   }
 
@@ -648,7 +654,11 @@ class _AndroidTextureRenderingController {
 
   final RtcConnection? _connection;
 
+  final VoidCallback _onViewReady;
+
   late final _NativeViewRef _nativeViewRef;
+
+  int? get textureId => _nativeViewRef.textureId;
 
   VoidCallback? _listener;
 
@@ -674,6 +684,7 @@ class _AndroidTextureRenderingController {
       return;
     }
 
+    _onViewReady();
     await _rtcEngineImpl.globalVideoViewController
         .setupVideoView(viewHandle, _canvas, connection: _connection);
     _nativeViewRef._unref();
@@ -692,7 +703,7 @@ class _AndroidTextureRenderingController {
     await _rtcEngineImpl.globalVideoViewController.deleteNativeView(viewHandle);
     _nativeViewRef._unref();
 
-    _nativeViewRef.dispose();
+    _nativeViewRef._unref();
   }
 }
 
@@ -707,10 +718,10 @@ class AndroidTextureRenderer extends StatefulWidget {
   final AgoraVideoViewCreatedCallback? onAgoraVideoViewCreated;
 
   @override
-  State<AgoraRtcRenderTexture> createState() => _AndroidTextureRendererState();
+  State<AndroidTextureRenderer> createState() => _AndroidTextureRendererState();
 }
 
-class _AndroidTextureRendererState extends State<AgoraRtcRenderTexture>
+class _AndroidTextureRendererState extends State<AndroidTextureRenderer>
     with RtcRenderMixin {
   int _width = 0;
   int _height = 0;
@@ -729,9 +740,13 @@ class _AndroidTextureRendererState extends State<AgoraRtcRenderTexture>
   Future<void> _initialize() async {
     final sourceController = widget.controller;
     _controllerInternal = _AndroidTextureRenderingController(
-        sourceController.rtcEngine,
-        sourceController.canvas,
-        sourceController.connection);
+      sourceController.rtcEngine,
+      sourceController.canvas,
+      sourceController.connection,
+      () {
+        setState(() {});
+      },
+    );
 
     // if (!_controllerInternal!.isInitialzed) {
     //   _listener ??= () {
@@ -763,38 +778,38 @@ class _AndroidTextureRendererState extends State<AgoraRtcRenderTexture>
   // }
 
   @override
-  void didUpdateWidget(covariant AgoraRtcRenderTexture oldWidget) {
+  void didUpdateWidget(covariant AndroidTextureRenderer oldWidget) {
     super.didUpdateWidget(oldWidget);
 
     _didUpdateWidget(oldWidget);
   }
 
   Future<void> _didUpdateWidget(
-      covariant AgoraRtcRenderTexture oldWidget) async {
-    if (_controllerInternal == null ||
-        _controllerInternal!.getTextureId() == kTextureNotInit) {
-      return;
-    }
-    if (!oldWidget.controller.isSame(widget.controller) &&
-        _controllerInternal != null) {
-      await _controllerInternal!.disposeRender();
-      await _initialize();
-    }
+      covariant AndroidTextureRenderer oldWidget) async {
+    // if (_controllerInternal == null ||
+    //     _controllerInternal!.getTextureId() == kTextureNotInit) {
+    //   return;
+    // }
+    // if (!oldWidget.controller.isSame(widget.controller) &&
+    //     _controllerInternal != null) {
+    //   await _controllerInternal!.disposeRender();
+    //   await _initialize();
+    // }
   }
 
   @override
   void deactivate() {
     super.deactivate();
-    if (_listener != null) {
-      _controllerInternal?.removeInitializedCompletedListener(_listener!);
-      _listener = null;
-    }
+    // if (_listener != null) {
+    //   _controllerInternal?.removeInitializedCompletedListener(_listener!);
+    //   _listener = null;
+    // }
   }
 
   @override
   void dispose() {
-    _controllerInternal?.disposeRender();
-    _controllerInternal = null;
+    // _controllerInternal?.disposeRender();
+    // _controllerInternal = null;
 
     super.dispose();
   }
@@ -804,58 +819,70 @@ class _AndroidTextureRendererState extends State<AgoraRtcRenderTexture>
     if (_controllerInternal == null) {
       return;
     }
-    final textureId = _controllerInternal!.getTextureId();
+    // final textureId = _controllerInternal!.getTextureId();
 
-    methodChannel = MethodChannel('agora_rtc_engine/texture_render_$textureId');
-    methodChannel!.setMethodCallHandler((call) async {
-      if (call.method == 'onSizeChanged') {
-        _width = call.arguments['width'];
-        _height = call.arguments['height'];
-        setState(() {});
-        return true;
-      }
-      return false;
-    });
+    // methodChannel = MethodChannel('agora_rtc_engine/texture_render_$textureId');
+    // methodChannel!.setMethodCallHandler((call) async {
+    //   if (call.method == 'onSizeChanged') {
+    //     _width = call.arguments['width'];
+    //     _height = call.arguments['height'];
+    //     setState(() {});
+    //     return true;
+    //   }
+    //   return false;
+    // });
   }
 
   Widget _applyRenderMode(RenderModeType renderMode, Widget child) {
     if (renderMode == RenderModeType.renderModeFit) {
-      return Container(
-        color: Colors.black,
-        constraints: const BoxConstraints.expand(),
-        child: FittedBox(
+
+      return LayoutBuilder(builder: (context, constraints) {
+        print('constraints.maxWidth: ${constraints.maxWidth}');
+        print('constraints.maxHeight: ${constraints.maxHeight}');
+        return FittedBox(
           fit: BoxFit.contain,
-          child: SizedBox(
-            width: _width.toDouble(),
-            height: _height.toDouble(),
+          child: ConstrainedBox(
+            constraints: constraints,
             child: child,
           ),
-        ),
-      );
+        );
+      },);
+
+      // return FittedBox(
+      //     fit: BoxFit.contain,
+      //     child: ConstrainedBox(
+      //       constraints: const BoxConstraints.tightForFinite(),
+      //       child: child,
+      //     ),
+      //   );
+      
+      // return Container(
+      //   color: Colors.black,
+      //   constraints: const BoxConstraints.tightForFinite(),
+      //   child: FittedBox(
+      //     fit: BoxFit.contain,
+      //     child: ConstrainedBox(
+      //       constraints: const BoxConstraints.tightForFinite(),
+      //       child: child,
+      //     ),
+      //   ),
+      // );
     } else if (renderMode == RenderModeType.renderModeHidden) {
       return Container(
-        constraints: const BoxConstraints.expand(),
+        constraints: const BoxConstraints.tightForFinite(),
         child: FittedBox(
           fit: BoxFit.cover,
           clipBehavior: Clip.hardEdge,
-          child: SizedBox(
-            width: _width.toDouble(),
-            height: _height.toDouble(),
-            child: child,
-          ),
+          child: child,
         ),
       );
     } else {
       // RenderModeType.renderModeAdaptive
       return Container(
-        constraints: const BoxConstraints.expand(),
+        constraints: const BoxConstraints.tightForFinite(),
         child: FittedBox(
           fit: BoxFit.fill,
-          child: SizedBox(
-            width: _width.toDouble(),
-            height: _height.toDouble(),
-            child: child,
-          ),
+          child: child,
         ),
       );
     }
@@ -900,47 +927,50 @@ class _AndroidTextureRendererState extends State<AgoraRtcRenderTexture>
   @override
   Widget build(BuildContext context) {
     Widget result = const SizedBox.expand();
-    if (_controllerInternal == null) {
+    if (_controllerInternal == null || _controllerInternal?.textureId == null) {
       return result;
     }
     final controller = _controllerInternal!;
-    if (controller.getTextureId() != kTextureNotInit) {
-      if (_height != 0 && _width != 0) {
-        result = buildTexure(controller.getTextureId());
-        final renderMode =
-            controller.canvas.renderMode ?? RenderModeType.renderModeHidden;
+    result = buildTexure(controller.textureId!);
+    result = _applyRenderMode(RenderModeType.renderModeFit, result);
 
-        if (controller.shouldHandlerRenderMode) {
-          result = _applyRenderMode(renderMode, result);
-          VideoMirrorModeType mirrorMode;
-          if (controller.isLocalUid) {
-            mirrorMode = controller.canvas.mirrorMode ??
-                VideoMirrorModeType.videoMirrorModeEnabled;
-          } else {
-            mirrorMode = controller.canvas.mirrorMode ??
-                VideoMirrorModeType.videoMirrorModeDisabled;
-          }
+    // if (controller.getTextureId() != kTextureNotInit) {
+    //   if (_height != 0 && _width != 0) {
+    //     result = buildTexure(controller.getTextureId());
+    //     final renderMode =
+    //         controller.canvas.renderMode ?? RenderModeType.renderModeHidden;
 
-          final sourceType = controller.canvas.sourceType ??
-              VideoSourceType.videoSourceCameraPrimary;
+    // if (controller.shouldHandlerRenderMode) {
+    //   result = _applyRenderMode(renderMode, result);
+    //   VideoMirrorModeType mirrorMode;
+    //   if (controller.isLocalUid) {
+    //     mirrorMode = controller.canvas.mirrorMode ??
+    //         VideoMirrorModeType.videoMirrorModeEnabled;
+    //   } else {
+    //     mirrorMode = controller.canvas.mirrorMode ??
+    //         VideoMirrorModeType.videoMirrorModeDisabled;
+    //   }
 
-          result = _applyMirrorMode(mirrorMode, result, sourceType);
-        } else {
-          // Fit mode by default if does not need to handle render mode
-          result = _applyRenderMode(RenderModeType.renderModeFit, result);
-        }
-      }
+    //   final sourceType = controller.canvas.sourceType ??
+    //       VideoSourceType.videoSourceCameraPrimary;
 
-      // Only need to size in native side on Android
-      if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
-        result = _SizeChangedAwareWidget(
-          onChange: (size) {
-            _setSizeNative(size, Offset.zero);
-          },
-          child: result,
-        );
-      }
-    }
+    //   result = _applyMirrorMode(mirrorMode, result, sourceType);
+    // } else {
+    //   // Fit mode by default if does not need to handle render mode
+    //   result = _applyRenderMode(RenderModeType.renderModeFit, result);
+    // }
+    //   }
+
+    //   // Only need to size in native side on Android
+    //   if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
+    //     result = _SizeChangedAwareWidget(
+    //       onChange: (size) {
+    //         _setSizeNative(size, Offset.zero);
+    //       },
+    //       child: result,
+    //     );
+    //   }
+    // }
 
     return result;
   }

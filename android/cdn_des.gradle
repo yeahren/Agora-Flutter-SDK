@@ -1,0 +1,264 @@
+import java.security.MessageDigest
+import java.security.NoSuchAlgorithmException
+
+String localMavenPath = project.mkdir("build").absolutePath
+rootProject.allprojects {
+    repositories {
+        maven { url "file://$localMavenPath" }
+    }
+}
+
+// String aarPath = localMavenPath
+// task useAar {
+//     File file = project.file("libs")
+//     if (file.exists() && file.isDirectory()) {
+//         file.listFiles(new FileFilter() {
+//             @Override
+//             boolean accept(File pathname) {
+//                 return pathname.name.endsWith(".aar")
+//             }
+//         }).each { item ->
+//             String aarName = item.name.substring(0, item.name.length() - 4)
+//             String[] aarInfo = aarName.split("-")
+//             String sha1 = getFileSha1(item)
+//             String md5 = getFileMD5(item)
+//             println("aar: " + aarInfo + " file sha1:" + sha1 + " md5:" + md5)
+//             String fromStr = item.path
+//             String intoStr = aarPath + "/" + aarInfo[0].replace(".", "/") + "/" + aarInfo[1] + "/" + aarInfo[2]
+//             String newName = aarInfo[1] + "-" + aarInfo[2] + ".aar"
+
+//             project.copy {
+//                 from fromStr
+//                 into intoStr
+//                 rename(item.name, newName)
+//             }
+
+//             project.file(intoStr + "/" + newName + ".md5").write(md5)
+//             project.file(intoStr + "/" + newName + ".sha1").write(sha1)
+
+//             String pomPath = intoStr + "/" + newName.substring(0, newName.length() - 4) + ".pom"
+//             project.file(pomPath).write(createPomStr(aarInfo[0], aarInfo[1], aarInfo[2]))
+//             project.file(pomPath + ".md5").write(getFileMD5(project.file(pomPath)))
+//             project.file(pomPath + ".sha1").write(getFileSha1(project.file(pomPath)))
+
+//             String metadataPath = project.file(intoStr).getParentFile().path + "/maven-metadata.xml"
+//             project.file(metadataPath).write(createMetadataStr(aarInfo[0], aarInfo[1], aarInfo[2]))
+//             project.file(metadataPath + ".md5").write(getFileMD5(project.file(metadataPath)))
+//             project.file(metadataPath + ".sha1").write(getFileSha1(project.file(metadataPath)))
+//             dependencies {
+//                 implementation "${aarInfo[0]}:${aarInfo[1]}:${aarInfo[2]}"
+//             }
+//         }
+//     }
+// }
+
+public static String createMetadataStr(String groupId, String artifactId, String version) {
+    return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+            "<metadata>\n" +
+            "  <groupId>$groupId</groupId>\n" +
+            "  <artifactId>$artifactId</artifactId>\n" +
+            "  <versioning>\n" +
+            "    <release>$version</release>\n" +
+            "    <versions>\n" +
+            "      <version>$version</version>\n" +
+            "    </versions>\n" +
+            "    <lastUpdated>${new Date().format('yyyyMMdd')}000000</lastUpdated>\n" +
+            "  </versioning>\n" +
+            "</metadata>\n"
+}
+
+public static String createPomStr(String groupId, String artifactId, String version) {
+    return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+            "<project xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd\" xmlns=\"http://maven.apache.org/POM/4.0.0\"\n" +
+            "    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" +
+            "  <modelVersion>4.0.0</modelVersion>\n" +
+            "  <groupId>$groupId</groupId>\n" +
+            "  <artifactId>$artifactId</artifactId>\n" +
+            "  <version>$version</version>\n" +
+            "  <packaging>aar</packaging>\n" +
+            "</project>\n"
+}
+
+public static String getFileSha1(File file) {
+    FileInputStream input = null;
+    try {
+        input = new FileInputStream(file);
+        MessageDigest digest = MessageDigest.getInstance("SHA-1");
+        byte[] buffer = new byte[1024 * 1024 * 10];
+
+        int len = 0;
+        while ((len = input.read(buffer)) > 0) {
+            digest.update(buffer, 0, len);
+        }
+        String sha1 = new BigInteger(1, digest.digest()).toString(16);
+        int length = 40 - sha1.length();
+        if (length > 0) {
+            for (int i = 0; i < length; i++) {
+                sha1 = "0" + sha1;
+            }
+        }
+        return sha1;
+    }
+    catch (IOException e) {
+        System.out.println(e);
+    }
+    catch (NoSuchAlgorithmException e) {
+        System.out.println(e);
+    }
+    finally {
+        try {
+            if (input != null) {
+                input.close();
+            }
+        }
+        catch (IOException e) {
+            System.out.println(e);
+        }
+    }
+}
+
+public static String getFileMD5(File file) {
+    FileInputStream input = null;
+    try {
+        input = new FileInputStream(file);
+        MessageDigest digest = MessageDigest.getInstance("MD5");
+        byte[] buffer = new byte[1024 * 1024 * 10];
+
+        int len = 0;
+        while ((len = input.read(buffer)) > 0) {
+            digest.update(buffer, 0, len);
+        }
+        String md5 = new BigInteger(1, digest.digest()).toString(16);
+        int length = 32 - md5.length();
+        if (length > 0) {
+            for (int i = 0; i < length; i++) {
+                md5 = "0" + md5;
+            }
+        }
+        return md5;
+    }
+    catch (IOException e) {
+        System.out.println(e);
+    }
+    catch (NoSuchAlgorithmException e) {
+        System.out.println(e);
+    }
+    finally {
+        try {
+            if (input != null) {
+                input.close();
+            }
+        }
+        catch (IOException e) {
+            System.out.println(e);
+        }
+    }
+}
+
+static boolean isDev(Project project) {
+  def devFile = project.file('.plugin_dev')
+  return devFile.exists()
+}
+
+task downloadNativeDependency {
+    logger.quiet "[agora_rtc_engine] Download Native SDK dependency"
+
+    if (isDev(project)) {
+        logger.quiet "[agora_rtc_engine] Found the debug flag, skip download."
+        return
+    }
+
+    def depsUrl = ""
+
+    depsUrl = (file("$projectDir.absolutePath/../internal/deps.yml").text =~ /native_cdn_android:\s*(.*)/)[0][1]
+
+    // https://download.agora.io/sdk/release/Agora_Native_SDK_for_Android_rel.v4.3.0_57357_FULL_20240202_1447_292394.zip 
+    // find version: v4.3.0, using regex pattern in groovy
+    def depsVer = '';
+
+    // def url = 'https://download.agora.io/sdk/release/Agora_Native_SDK_for_Android_rel.v4.3.0_57357_FULL_20240202_1447_292394.zip'
+    def matcher = depsUrl =~ /rel\.v([0-9\.]*)/
+    if (matcher.find()) {
+        depsVer = matcher.group(1)
+        println "Version: $depsVer"
+    }
+
+    logger.quiet "[agora_rtc_engine] Native SDK version: $depsVer"
+
+    def libsDir = file("$projectDir.absolutePath/libs")
+    if (file("$libsDir/agora-rtc-sdk.jar").exists()) {
+        def version = file("$libsDir/VERSION.txt").readLines().first().trim()
+        if (version == depsVer) {
+            logger.quiet "[agora_rtc_engine] The specified version SDK already exists!"
+            return
+        } else {
+            logger.quiet "[agora_rtc_engine] SDK was found in cache, but the version ($version) does not match the version specified in deps.yml, overwrite!"
+        }
+    }
+    delete libsDir
+    libsDir.mkdir()
+    def unzipDirName = "Agora_Native_SDK_for_Android_FULL"
+    def unzipSDKPath = "${libsDir}/${unzipDirName}/rtc/sdk"
+    ant.get(src: depsUrl, dest: "$libsDir/sdk.zip")
+    ant.unzip(src: "$libsDir/sdk.zip", dest: libsDir)
+    ant.move(file: "${unzipSDKPath}/armeabi-v7a", todir: libsDir, overwrite: true, failonerror: false)
+    ant.move(file: "${unzipSDKPath}/arm64-v8a", todir: libsDir, overwrite: true, failonerror: false)
+    ant.move(file: "${unzipSDKPath}/x86", todir: libsDir, overwrite: true, failonerror: false)
+    ant.move(file: "${unzipSDKPath}/x86_64", todir: libsDir, overwrite: true, failonerror: false)
+    ant.move(file: "${unzipSDKPath}/agora-rtc-sdk.jar", todir: libsDir, overwrite: true)
+    ant.move(file: "${unzipSDKPath}/AgoraScreenShareExtension.aar", todir: libsDir, overwrite: true)
+    // Create a VERSION.txt file to record the version number of the SDK
+    ant.echo(file: "${libsDir}/VERSION.txt", message: depsVer)
+
+    delete "${libsDir}/${unzipDirName}"
+    delete "$libsDir/sdk.zip"
+    logger.quiet "[agora_rtc_engine] Download Native SDK $depsVer Done!"
+
+    // Config local maven
+    String aarPath = localMavenPath
+    File file = project.file("libs")
+    if (file.exists() && file.isDirectory()) {
+        file.listFiles(new FileFilter() {
+            @Override
+            boolean accept(File pathname) {
+                return pathname.name.endsWith(".aar")
+            }
+        }).each { item ->
+            String aarName = item.name.substring(0, item.name.length() - 4)
+            String[] aarInfo = aarName.split("-")
+            String sha1 = getFileSha1(item)
+            String md5 = getFileMD5(item)
+            println("aar: " + aarInfo + " file sha1:" + sha1 + " md5:" + md5)
+            String fromStr = item.path
+            String intoStr = aarPath + "/" + aarInfo[0].replace(".", "/") + "/" + aarInfo[1] + "/" + aarInfo[2]
+            String newName = aarInfo[1] + "-" + aarInfo[2] + ".aar"
+
+            project.copy {
+                from fromStr
+                into intoStr
+                rename(item.name, newName)
+            }
+
+            project.file(intoStr + "/" + newName + ".md5").write(md5)
+            project.file(intoStr + "/" + newName + ".sha1").write(sha1)
+
+            String pomPath = intoStr + "/" + newName.substring(0, newName.length() - 4) + ".pom"
+            project.file(pomPath).write(createPomStr(aarInfo[0], aarInfo[1], aarInfo[2]))
+            project.file(pomPath + ".md5").write(getFileMD5(project.file(pomPath)))
+            project.file(pomPath + ".sha1").write(getFileSha1(project.file(pomPath)))
+
+            String metadataPath = project.file(intoStr).getParentFile().path + "/maven-metadata.xml"
+            project.file(metadataPath).write(createMetadataStr(aarInfo[0], aarInfo[1], aarInfo[2]))
+            project.file(metadataPath + ".md5").write(getFileMD5(project.file(metadataPath)))
+            project.file(metadataPath + ".sha1").write(getFileSha1(project.file(metadataPath)))
+            dependencies {
+                implementation "${aarInfo[0]}:${aarInfo[1]}:${aarInfo[2]}"
+            }
+        }
+    }
+
+}
+
+tasks.withType(JavaCompile) {
+    preBuild.dependsOn 'downloadNativeDependency'
+}

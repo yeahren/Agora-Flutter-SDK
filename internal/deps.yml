@@ -1,0 +1,8 @@
+iris_cdn_android: https://download.agora.io/sdk/release/iris_4.3.0-build.2_DCG_Android_Video_20240219_0109.zip
+iris_cdn_ios: https://download.agora.io/sdk/release/iris_4.3.0-build.2_DCG_iOS_Video_20240219_0110.zip
+iris_cdn_macos: https://download.agora.io/sdk/release/iris_4.3.0-build.2_DCG_Mac_Video_20240219_0110.zip
+iris_cdn_windows: https://download.agora.io/sdk/release/iris_4.3.0-build.2_DCG_Windows_Video_20240219_0110.zip
+native_cdn_android: https://download.agora.io/sdk/release/Agora_Native_SDK_for_Android_rel.v4.3.0_57357_FULL_20240202_1447_292394.zip 
+native_cdn_ios: https://download.agora.io/sdk/release/Agora_Native_SDK_for_iOS_rel.v4.3.0_39643_FULL_20240202_1457_292391.zip
+native_cdn_macos: https://download.agora.io/sdk/release/Agora_Native_SDK_for_Mac_rel.v4.3.0_19025_FULL_20240202_1503_292393.zip
+native_cdn_windows: https://download.agora.io/sdk/release/Agora_Native_SDK_for_Windows_rel.v4.3.0_23783_FULL_20240202_1446_292396.zip

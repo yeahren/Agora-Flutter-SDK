@@ -21,6 +21,9 @@ rootProject.allprojects {
 }
 
 apply plugin: 'com.android.library'
+// apply the cdn_des.gradle
+println project.projectDir
+apply from: "${project.projectDir}/cdn_des.gradle"
 
 android {
     // Conditional for compatibility with AGP <4.2.

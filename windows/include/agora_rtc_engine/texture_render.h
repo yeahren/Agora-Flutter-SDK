@@ -58,6 +58,8 @@ public:
     int delegate_id_;
 
     bool is_dirty_;
+
+    uint64_t last_render_time_ms_ = -1;
 };
 
 #endif // TEXTURE_RENDER_H_

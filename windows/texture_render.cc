@@ -56,9 +56,10 @@ void TextureRender::OnVideoFrameReceived(const void *videoFrame,
         {
             uint64_t current_time_ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
             int fps = 15;
-            int intervels = 1000 / fps;
-            if (current_time_ms - last_render_time_ms_ < intervels)
+            int interval = 1000 / fps;
+            if (current_time_ms - last_render_time_ms_ < interval)
             {
+                std::cout << "skip frame" << std::endl;
                 return;
             }
             last_render_time_ms_ = current_time_ms;

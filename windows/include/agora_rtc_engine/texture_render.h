@@ -59,7 +59,7 @@ public:
 
     bool is_dirty_;
 
-    uint64_t last_render_time_ms_ = -1;
+    uint64_t last_render_time_ms_;
 };
 
 #endif // TEXTURE_RENDER_H_

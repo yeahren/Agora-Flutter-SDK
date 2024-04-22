@@ -14,7 +14,7 @@ TextureRender::TextureRender(flutter::BinaryMessenger *messenger,
       iris_rtc_rendering_(iris_rtc_rendering),
       delegate_id_(agora::iris::INVALID_DELEGATE_ID),
       is_dirty_(false),
-      last_render_time_ms_(-1)
+      last_render_time_ms_(0)
 {
     // Create flutter desktop pixelbuffer texture;
     texture_ =
@@ -48,7 +48,7 @@ void TextureRender::OnVideoFrameReceived(const void *videoFrame,
 
     if (!is_dirty_)
     {
-        if (last_render_time_ms_ == -1)
+        if (last_render_time_ms_ == 0)
         {
             last_render_time_ms_ = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
         }

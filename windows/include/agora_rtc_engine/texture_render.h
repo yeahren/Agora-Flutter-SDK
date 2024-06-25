@@ -7,6 +7,8 @@
 #include <flutter/texture_registrar.h>
 #include <map>
 #include <mutex>
+#include <winrt/base.h>
+#include <d3d11.h>
 
 #include "iris_rtc_rendering_cxx.h"
 
@@ -37,7 +39,8 @@ public:
 private:
     const FlutterDesktopPixelBuffer *CopyPixelBuffer(size_t width, size_t height);
 
-public:
+    const FlutterDesktopGpuSurfaceDescriptor *GetSurfaceDescriptor(size_t width, size_t height);
+
     flutter::TextureRegistrar *registrar_;
     agora::iris::IrisRtcRendering *iris_rtc_rendering_;
     std::unique_ptr<flutter::MethodChannel<flutter::EncodableValue>> method_channel_;
@@ -58,6 +61,11 @@ public:
     int delegate_id_;
 
     bool is_dirty_;
+
+    FlutterDesktopGpuSurfaceDescriptor surface_descriptor_ = {};
+
+    winrt::com_ptr<ID3D11Texture2D> surface_{nullptr};
+    winrt::com_ptr<IDXGIResource> dxgi_surface_;
 };
 
 #endif // TEXTURE_RENDER_H_

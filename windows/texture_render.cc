@@ -14,13 +14,28 @@ TextureRender::TextureRender(flutter::BinaryMessenger *messenger,
       delegate_id_(agora::iris::INVALID_DELEGATE_ID),
       is_dirty_(false)
 {
+    surface_descriptor_.struct_size = sizeof(FlutterDesktopGpuSurfaceDescriptor);
+    surface_descriptor_.format =
+        kFlutterDesktopPixelFormatNone; // no format required for DXGI surfaces
+
     // Create flutter desktop pixelbuffer texture;
+    // texture_ =
+    //     std::make_unique<flutter::TextureVariant>(flutter::PixelBufferTexture(
+    //         [this](size_t width,
+    //                size_t height) -> const FlutterDesktopPixelBuffer *
+    //         {
+    //             return this->CopyPixelBuffer(width, height);
+    //         }));
+
     texture_ =
-        std::make_unique<flutter::TextureVariant>(flutter::PixelBufferTexture(
-            [this](size_t width,
-                   size_t height) -> const FlutterDesktopPixelBuffer *
+        std::make_unique<flutter::TextureVariant>(flutter::GpuSurfaceTexture(
+            kFlutterDesktopGpuSurfaceTypeDxgiSharedHandle,
+            [this](
+                size_t width,
+                size_t height) -> const FlutterDesktopGpuSurfaceDescriptor *
             {
-                return this->CopyPixelBuffer(width, height);
+                return this->GetSurfaceDescriptor(width, height);
+                // return &surface_descriptor_;
             }));
 
     texture_id_ = registrar_->RegisterTexture(texture_.get());
@@ -62,7 +77,33 @@ void TextureRender::OnVideoFrameReceived(const void *videoFrame,
             method_channel_->InvokeMethod("onSizeChanged", std::make_unique<EncodableValue>(EncodableValue(args)));
         }
 
-        std::copy(static_cast<uint8_t *>(video_frame->yBuffer), static_cast<uint8_t *>(video_frame->yBuffer) + data_size, buffer_.data());
+        ID3D11Texture2D *d3d11Texture2d = static_cast<ID3D11Texture2D *>(video_frame->d3d11Texture2d);
+
+        d3d11Texture2d->AddRef();
+
+        // winrt::com_ptr<ID3D11Texture2D> texture;
+        if (surface_)
+        {
+            surface_.detach();
+        }
+        surface_.attach(d3d11Texture2d);
+
+        HANDLE shared_handle;
+        surface_.try_as(dxgi_surface_);
+        assert(dxgi_surface_);
+        dxgi_surface_->GetSharedHandle(&shared_handle);
+
+        surface_descriptor_.handle = shared_handle;
+        surface_descriptor_.width = surface_descriptor_.visible_width = video_frame->width;
+        surface_descriptor_.height = surface_descriptor_.visible_height = video_frame->height;
+        surface_descriptor_.release_context = d3d11Texture2d; // surface_.get();
+        surface_descriptor_.release_callback = [](void *release_context)
+        {
+            auto texture = reinterpret_cast<ID3D11Texture2D *>(release_context);
+            texture->Release();
+        };
+
+        // std::copy(static_cast<uint8_t *>(video_frame->yBuffer), static_cast<uint8_t *>(video_frame->yBuffer) + data_size, buffer_.data());
 
         frame_width_ = video_frame->width;
         frame_height_ = video_frame->height;
@@ -73,6 +114,27 @@ void TextureRender::OnVideoFrameReceived(const void *videoFrame,
     {
         registrar_->MarkTextureFrameAvailable(texture_id_);
     }
+}
+
+const FlutterDesktopGpuSurfaceDescriptor *
+TextureRender::GetSurfaceDescriptor(size_t width, size_t height)
+{
+    const std::lock_guard<std::mutex> lock(buffer_mutex_);
+
+    //   if (!is_running_) {
+    //     return nullptr;
+    //   }
+
+    //   if (last_frame_) {
+    //     ProcessFrame(last_frame_);
+    //   }
+
+    //   if (surface_) {
+    //     // Gets released in the SurfaceDescriptor's release callback.
+    //     surface_->AddRef();
+    //   }
+
+    return &surface_descriptor_;
 }
 
 const FlutterDesktopPixelBuffer *
@@ -121,7 +183,7 @@ void TextureRender::UpdateData(unsigned int uid, const std::string &channelId, u
     IrisRtcVideoFrameConfig config = EmptyIrisRtcVideoFrameConfig;
     config.uid = uid;
     config.video_source_type = videoSourceType;
-    config.video_frame_format = agora::media::base::VIDEO_PIXEL_FORMAT::VIDEO_PIXEL_RGBA;
+    config.video_frame_format = agora::media::base::VIDEO_PIXEL_FORMAT::VIDEO_PIXEL_DEFAULT;
     if (!channelId.empty())
     {
         strcpy_s(config.channelId, channelId.c_str());

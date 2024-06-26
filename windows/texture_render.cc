@@ -183,7 +183,7 @@ void TextureRender::UpdateData(unsigned int uid, const std::string &channelId, u
     IrisRtcVideoFrameConfig config = EmptyIrisRtcVideoFrameConfig;
     config.uid = uid;
     config.video_source_type = videoSourceType;
-    config.video_frame_format = agora::media::base::VIDEO_PIXEL_FORMAT::VIDEO_PIXEL_DEFAULT;
+    config.video_frame_format = agora::media::base::VIDEO_PIXEL_FORMAT::VIDEO_TEXTURE_ID3D11TEXTURE2D;
     if (!channelId.empty())
     {
         strcpy_s(config.channelId, channelId.c_str());

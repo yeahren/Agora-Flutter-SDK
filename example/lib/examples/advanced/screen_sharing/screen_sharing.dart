@@ -98,6 +98,9 @@ class _State extends State<ScreenSharing> with KeepRemoteVideoViewsMixin {
 
     _engine.registerEventHandler(_rtcEngineEventHandler);
 
+            await _engine.setParameters("{\"che.video.windows_capture_to_texture\":true}");
+    await _engine.setParameters("{\"che.video.video_force_use_nv12_texture\":true}");
+
     await _engine.enableVideo();
     await _engine.startPreview();
     await _engine.setClientRole(role: ClientRoleType.clientRoleBroadcaster);

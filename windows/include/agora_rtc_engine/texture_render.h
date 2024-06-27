@@ -9,8 +9,13 @@
 #include <mutex>
 #include <winrt/base.h>
 #include <d3d11.h>
+#include <D3d11.h>
+#include <winrt/Windows.Foundation.h>
+#include <windows.graphics.directx.h>
 
 #include "iris_rtc_rendering_cxx.h"
+
+class GraphicsContext;
 
 class TextureRender : public agora::iris::VideoFrameObserverDelegate
 {
@@ -39,6 +44,11 @@ public:
 private:
     const FlutterDesktopPixelBuffer *CopyPixelBuffer(size_t width, size_t height);
 
+    void EnsureSurface(uint32_t width, uint32_t height);
+
+    void ProcessFrame(
+        winrt::com_ptr<ID3D11Texture2D> src_texture);
+
     const FlutterDesktopGpuSurfaceDescriptor *GetSurfaceDescriptor(size_t width, size_t height);
 
     flutter::TextureRegistrar *registrar_;
@@ -66,6 +76,12 @@ private:
 
     winrt::com_ptr<ID3D11Texture2D> surface_{nullptr};
     winrt::com_ptr<IDXGIResource> dxgi_surface_;
+    winrt::com_ptr<ID3D11Texture2D> last_frame_;
+
+    std::unique_ptr<GraphicsContext> graphics_context_;
+
+    // corresponds to DXGI_FORMAT_B8G8R8A8_UNORM
+    static constexpr auto kPixelFormat = ABI::Windows::Graphics::DirectX::DirectXPixelFormat::DirectXPixelFormat_B8G8R8A8UIntNormalized;
 };
 
 #endif // TEXTURE_RENDER_H_

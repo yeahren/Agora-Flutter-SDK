@@ -388,6 +388,8 @@ class _AgoraRtcRenderTextureState extends State<AgoraRtcRenderTexture>
       if (call.method == 'onSizeChanged') {
         _width = call.arguments['width'];
         _height = call.arguments['height'];
+              debugPrint(
+          'setMethodCallHandler:');
         setState(() {});
         return true;
       }

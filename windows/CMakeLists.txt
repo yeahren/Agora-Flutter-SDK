@@ -42,6 +42,8 @@ list(APPEND PLUGIN_SOURCES
   "agora_rtc_engine_plugin.cpp"
   "texture_render.cc"
   "video_view_controller.cc"
+  "util/direct3d11.interop.cc"
+  "util/string_converter.cc"
 )
 
 # Define the plugin library target. Its name must not be changed (see comment

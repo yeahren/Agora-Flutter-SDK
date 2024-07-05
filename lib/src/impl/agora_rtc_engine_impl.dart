@@ -453,7 +453,11 @@ class RtcEngineImpl extends rtc_engine_ex_binding.RtcEngineExImpl
       await _initializeInternal(context);
     });
 
-    await super.initialize(context);
+    try {
+      await super.initialize(context);
+    } catch (e) {
+      print('[RtcEngine.initialize] err: ${e.toString()}');
+    }
 
     await irisMethodChannel.invokeMethod(IrisMethodCall(
       'RtcEngine_setAppType',

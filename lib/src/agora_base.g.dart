@@ -186,6 +186,12 @@ Map<String, dynamic> _$VideoSubscriptionOptionsToJson(
 const _$VideoStreamTypeEnumMap = {
   VideoStreamType.videoStreamHigh: 0,
   VideoStreamType.videoStreamLow: 1,
+  VideoStreamType.videoStreamLayer1: 4,
+  VideoStreamType.videoStreamLayer2: 5,
+  VideoStreamType.videoStreamLayer3: 6,
+  VideoStreamType.videoStreamLayer4: 7,
+  VideoStreamType.videoStreamLayer5: 8,
+  VideoStreamType.videoStreamLayer6: 9,
 };
 
 EncodedVideoFrameInfo _$EncodedVideoFrameInfoFromJson(
@@ -486,6 +492,51 @@ Map<String, dynamic> _$SimulcastStreamConfigToJson(
   return val;
 }
 
+SimulcastConfig _$SimulcastConfigFromJson(Map<String, dynamic> json) =>
+    SimulcastConfig(
+      configs: (json['configs'] as List<dynamic>?)
+          ?.map((e) => StreamLayerConfig.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+
+Map<String, dynamic> _$SimulcastConfigToJson(SimulcastConfig instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('configs', instance.configs?.map((e) => e.toJson()).toList());
+  return val;
+}
+
+StreamLayerConfig _$StreamLayerConfigFromJson(Map<String, dynamic> json) =>
+    StreamLayerConfig(
+      dimensions: json['dimensions'] == null
+          ? null
+          : VideoDimensions.fromJson(
+              json['dimensions'] as Map<String, dynamic>),
+      framerate: (json['framerate'] as num?)?.toInt(),
+      enable: json['enable'] as bool?,
+    );
+
+Map<String, dynamic> _$StreamLayerConfigToJson(StreamLayerConfig instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('dimensions', instance.dimensions?.toJson());
+  writeNotNull('framerate', instance.framerate);
+  writeNotNull('enable', instance.enable);
+  return val;
+}
+
 Rectangle _$RectangleFromJson(Map<String, dynamic> json) => Rectangle(
       x: (json['x'] as num?)?.toInt(),
       y: (json['y'] as num?)?.toInt(),
@@ -572,6 +623,29 @@ const _$WatermarkFitModeEnumMap = {
   WatermarkFitMode.fitModeCoverPosition: 0,
   WatermarkFitMode.fitModeUseImageRatio: 1,
 };
+
+PipOptions _$PipOptionsFromJson(Map<String, dynamic> json) => PipOptions(
+      contentSource: (readIntPtr(json, 'contentSource') as num?)?.toInt(),
+      contentWidth: (json['contentWidth'] as num?)?.toInt(),
+      contentHeight: (json['contentHeight'] as num?)?.toInt(),
+      autoEnterPip: json['autoEnterPip'] as bool?,
+    );
+
+Map<String, dynamic> _$PipOptionsToJson(PipOptions instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('contentSource', instance.contentSource);
+  writeNotNull('contentWidth', instance.contentWidth);
+  writeNotNull('contentHeight', instance.contentHeight);
+  writeNotNull('autoEnterPip', instance.autoEnterPip);
+  return val;
+}
 
 RtcStats _$RtcStatsFromJson(Map<String, dynamic> json) => RtcStats(
       duration: (json['duration'] as num?)?.toInt(),
@@ -1243,7 +1317,7 @@ Map<String, dynamic> _$WlAccStatsToJson(WlAccStats instance) {
 VideoCanvas _$VideoCanvasFromJson(Map<String, dynamic> json) => VideoCanvas(
       uid: (json['uid'] as num?)?.toInt(),
       subviewUid: (json['subviewUid'] as num?)?.toInt(),
-      view: (json['view'] as num?)?.toInt(),
+      view: (readIntPtr(json, 'view') as num?)?.toInt(),
       backgroundColor: (json['backgroundColor'] as num?)?.toInt(),
       renderMode:
           $enumDecodeNullable(_$RenderModeTypeEnumMap, json['renderMode']),
@@ -1524,9 +1598,10 @@ ScreenCaptureParameters _$ScreenCaptureParametersFromJson(
       bitrate: (json['bitrate'] as num?)?.toInt(),
       captureMouseCursor: json['captureMouseCursor'] as bool?,
       windowFocus: json['windowFocus'] as bool?,
-      excludeWindowList: (json['excludeWindowList'] as List<dynamic>?)
-          ?.map((e) => (e as num).toInt())
-          .toList(),
+      excludeWindowList:
+          (readIntPtrList(json, 'excludeWindowList') as List<dynamic>?)
+              ?.map((e) => (e as num).toInt())
+              .toList(),
       excludeWindowCount: (json['excludeWindowCount'] as num?)?.toInt(),
       highLightWidth: (json['highLightWidth'] as num?)?.toInt(),
       highLightColor: (json['highLightColor'] as num?)?.toInt(),
@@ -1830,7 +1905,7 @@ const _$EncryptionModeEnumMap = {
 EchoTestConfiguration _$EchoTestConfigurationFromJson(
         Map<String, dynamic> json) =>
     EchoTestConfiguration(
-      view: (json['view'] as num?)?.toInt(),
+      view: (readIntPtr(json, 'view') as num?)?.toInt(),
       enableAudio: json['enableAudio'] as bool?,
       enableVideo: json['enableVideo'] as bool?,
       token: json['token'] as String?,
@@ -2381,6 +2456,11 @@ const _$MaxUserAccountLengthTypeEnumMap = {
   MaxUserAccountLengthType.maxUserAccountLength: 256,
 };
 
+const _$CameraFormatTypeEnumMap = {
+  CameraFormatType.cameraFormatNv12: 0,
+  CameraFormatType.cameraFormatBgra: 1,
+};
+
 const _$CodecCapMaskEnumMap = {
   CodecCapMask.codecCapMaskNone: 0,
   CodecCapMask.codecCapMaskHwDec: 1,
@@ -2393,6 +2473,23 @@ const _$SimulcastStreamModeEnumMap = {
   SimulcastStreamMode.autoSimulcastStream: -1,
   SimulcastStreamMode.disableSimulcastStream: 0,
   SimulcastStreamMode.enableSimulcastStream: 1,
+};
+
+const _$StreamLayerIndexEnumMap = {
+  StreamLayerIndex.streamLayer1: 0,
+  StreamLayerIndex.streamLayer2: 1,
+  StreamLayerIndex.streamLayer3: 2,
+  StreamLayerIndex.streamLayer4: 3,
+  StreamLayerIndex.streamLayer5: 4,
+  StreamLayerIndex.streamLayer6: 5,
+  StreamLayerIndex.streamLow: 6,
+  StreamLayerIndex.streamLayerCountMax: 7,
+};
+
+const _$PipStateEnumMap = {
+  PipState.pipStateStarted: 0,
+  PipState.pipStateStopped: 1,
+  PipState.pipStateFailed: 2,
 };
 
 const _$ClientRoleTypeEnumMap = {
@@ -2538,6 +2635,8 @@ const _$LocalVideoStreamReasonEnumMap = {
       .localVideoStreamReasonScreenCaptureWindowRecoverFromMinimized: 27,
   LocalVideoStreamReason.localVideoStreamReasonScreenCapturePaused: 28,
   LocalVideoStreamReason.localVideoStreamReasonScreenCaptureResumed: 29,
+  LocalVideoStreamReason.localVideoStreamReasonScreenCaptureDisplayDisconnected:
+      30,
 };
 
 const _$RemoteAudioStateEnumMap = {
@@ -2793,6 +2892,7 @@ const _$AreaCodeExEnumMap = {
   AreaCodeEx.areaCodeKr: 512,
   AreaCodeEx.areaCodeHkmc: 1024,
   AreaCodeEx.areaCodeUs: 2048,
+  AreaCodeEx.areaCodeRu: 4096,
   AreaCodeEx.areaCodeOvs: 4294967294,
 };
 

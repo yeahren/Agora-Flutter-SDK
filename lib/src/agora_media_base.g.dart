@@ -287,6 +287,34 @@ Map<String, dynamic> _$VideoFrameToJson(VideoFrame instance) {
   return val;
 }
 
+SnapshotConfig _$SnapshotConfigFromJson(Map<String, dynamic> json) =>
+    SnapshotConfig(
+      filePath: json['filePath'] as String?,
+      position:
+          $enumDecodeNullable(_$VideoModulePositionEnumMap, json['position']),
+    );
+
+Map<String, dynamic> _$SnapshotConfigToJson(SnapshotConfig instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('filePath', instance.filePath);
+  writeNotNull('position', _$VideoModulePositionEnumMap[instance.position]);
+  return val;
+}
+
+const _$VideoModulePositionEnumMap = {
+  VideoModulePosition.positionPostCapturer: 1,
+  VideoModulePosition.positionPreRenderer: 2,
+  VideoModulePosition.positionPreEncoder: 4,
+  VideoModulePosition.positionPostCapturerOrigin: 8,
+};
+
 AudioFrame _$AudioFrameFromJson(Map<String, dynamic> json) => AudioFrame(
       type: $enumDecodeNullable(_$AudioFrameTypeEnumMap, json['type']),
       samplesPerChannel: (json['samplesPerChannel'] as num?)?.toInt(),
@@ -556,13 +584,6 @@ const _$MediaPlayerSourceTypeEnumMap = {
   MediaPlayerSourceType.mediaPlayerSourceDefault: 0,
   MediaPlayerSourceType.mediaPlayerSourceFullFeatured: 1,
   MediaPlayerSourceType.mediaPlayerSourceSimple: 2,
-};
-
-const _$VideoModulePositionEnumMap = {
-  VideoModulePosition.positionPostCapturer: 1,
-  VideoModulePosition.positionPreRenderer: 2,
-  VideoModulePosition.positionPreEncoder: 4,
-  VideoModulePosition.positionPostCapturerOrigin: 8,
 };
 
 const _$AudioFramePositionEnumMap = {

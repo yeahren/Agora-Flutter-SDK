@@ -7,6 +7,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 
 // ignore_for_file: public_member_api_docs
 
@@ -146,7 +147,10 @@ mixin RtcRenderMixin<T extends StatefulWidget> on State<T> {
 
   @protected
   Widget buildTexure(int textureId) {
-    return Texture(textureId: textureId);
+    return Container(
+      color: Colors.red,
+      child:  Texture(textureId: textureId)
+    );
   }
 
   PlatformViewCreatedCallback _onPlatformViewCreated(

@@ -58,34 +58,34 @@ public:
             return;
         }
 
-        device_->GetImmediateContext(device_context_.put());
-        if (FAILED(util::CreateDirect3D11DeviceFromDXGIDevice(
-                device_.try_as<IDXGIDevice>().get(),
-                (IInspectable **)device_winrt_.put())))
-        {
-            return;
-        }
+        // device_->GetImmediateContext(device_context_.put());
+        // if (FAILED(util::CreateDirect3D11DeviceFromDXGIDevice(
+        //         device_.try_as<IDXGIDevice>().get(),
+        //         (IInspectable **)device_winrt_.put())))
+        // {
+        //     return;
+        // }
         valid_ = true;
     }
 
     inline bool IsValid() const { return valid_; }
 
-    ABI::Windows::Graphics::DirectX::Direct3D11::IDirect3DDevice *device() const
-    {
-        return device_winrt_.get();
-    }
+    // ABI::Windows::Graphics::DirectX::Direct3D11::IDirect3DDevice *device() const
+    // {
+    //     return device_winrt_.get();
+    // }
     ID3D11Device *d3d_device() const { return device_.get(); }
-    ID3D11DeviceContext *d3d_device_context() const
-    {
-        return device_context_.get();
-    }
+    // ID3D11DeviceContext *d3d_device_context() const
+    // {
+    //     return device_context_.get();
+    // }
 
 private:
     bool valid_ = false;
-    winrt::com_ptr<ABI::Windows::Graphics::DirectX::Direct3D11::IDirect3DDevice>
-        device_winrt_;
+    // winrt::com_ptr<ABI::Windows::Graphics::DirectX::Direct3D11::IDirect3DDevice>
+    //     device_winrt_;
     winrt::com_ptr<ID3D11Device> device_{nullptr};
-    winrt::com_ptr<ID3D11DeviceContext> device_context_{nullptr};
+    // winrt::com_ptr<ID3D11DeviceContext> device_context_{nullptr};
 };
 
 TextureRender::TextureRender(flutter::BinaryMessenger *messenger,
@@ -362,10 +362,10 @@ void TextureRender::ProcessFrame(
 
     EnsureSurface(width, height);
 
-    auto device_context = graphics_context_->d3d_device_context();
+    // auto device_context = graphics_context_->d3d_device_context();
 
-    device_context->CopyResource(surface_.get(), src_texture.get());
-    device_context->Flush();
+    // device_context->CopyResource(surface_.get(), src_texture.get());
+    // device_context->Flush();
 }
 
 void TextureRender::UpdateData(unsigned int uid, const std::string &channelId, unsigned int videoSourceType, unsigned int videoViewSetupMode)

@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:agora_rtc_engine/src/agora_base.dart';
 import 'package:agora_rtc_engine/src/agora_media_base.dart';
+import 'package:agora_rtc_engine/src/agora_rtc_engine.dart';
+import 'package:agora_rtc_engine/src/agora_rtc_engine_ex.dart';
 import 'package:agora_rtc_engine/src/impl/agora_rtc_engine_impl.dart';
 import 'package:agora_rtc_engine/src/impl/platform/global_video_view_controller.dart';
 import 'package:agora_rtc_engine/src/render/video_view_controller.dart';
@@ -149,4 +153,109 @@ mixin VideoViewControllerBaseMixin implements VideoViewControllerBase {
 
   @internal
   bool get shouldHandlerRenderMode => true;
+}
+
+/// Implementation of [PIPVideoViewController]
+class PIPVideoViewControllerImpl extends VideoViewController
+    implements PIPVideoViewController {
+  /// @nodoc
+  PIPVideoViewControllerImpl(
+      {required RtcEngine rtcEngine,
+      required VideoCanvas canvas,
+      bool useFlutterTexture = false,
+      bool useAndroidSurfaceView = false})
+      : super(
+          rtcEngine: rtcEngine,
+          canvas: canvas,
+          useFlutterTexture: useFlutterTexture,
+          useAndroidSurfaceView: useAndroidSurfaceView,
+        );
+
+  /// @nodoc
+  PIPVideoViewControllerImpl.remote(
+      {required RtcEngine rtcEngine,
+      required VideoCanvas canvas,
+      required RtcConnection connection,
+      bool useFlutterTexture = false,
+      bool useAndroidSurfaceView = false})
+      : super.remote(
+          rtcEngine: rtcEngine,
+          canvas: canvas,
+          connection: connection,
+          useFlutterTexture: useFlutterTexture,
+          useAndroidSurfaceView: useAndroidSurfaceView,
+        );
+
+  int _nativeViewPtr = 0;
+  Completer _attachNativeViewCompleter = Completer<void>();
+  bool _isStartPictureInPicture = false;
+
+  @override
+  Future<void> setupView(int nativeViewPtr) async {
+    await super.setupView(nativeViewPtr);
+
+    _nativeViewPtr = nativeViewPtr;
+    _attachNativeViewCompleter.complete();
+  }
+
+  @override
+  Future<void> disposeRender() async {
+    _nativeViewPtr = 0;
+    _attachNativeViewCompleter = Completer<void>();
+    super.disposeRender();
+  }
+
+  @override
+  Future<bool> isPipSupported() {
+    return rtcEngine.isPipSupported();
+  }
+
+  @override
+  Future<void> startPictureInPicture(PipOptions options) async {
+    assert(!kIsWeb, 'PIP feature is not supported on web.');
+    assert(
+        defaultTargetPlatform == TargetPlatform.iOS ||
+            defaultTargetPlatform == TargetPlatform.android,
+        'PIP feature is not supported on this platform.');
+    if (_isStartPictureInPicture) {
+      return;
+    }
+
+    _isStartPictureInPicture = true;
+
+    late int contentSource = 0;
+    if (defaultTargetPlatform == TargetPlatform.iOS) {
+      await _attachNativeViewCompleter.future;
+      assert(_nativeViewPtr != 0);
+      contentSource = _nativeViewPtr;
+    } else {
+      assert(defaultTargetPlatform == TargetPlatform.android);
+      contentSource =
+          await rtcEngine.globalVideoViewController!.getCurrentActivityHandle();
+    }
+    assert(contentSource != 0);
+
+    PipOptions newOptions = PipOptions(
+      contentSource: contentSource,
+      contentWidth: options.contentWidth,
+      contentHeight: options.contentHeight,
+      autoEnterPip: options.autoEnterPip,
+    );
+
+    await rtcEngine.setupPip(newOptions);
+    await rtcEngine.startPip();
+  }
+
+  @override
+  Future<void> stopPictureInPicture() async {
+    if (!_isStartPictureInPicture) {
+      return;
+    }
+
+    _isStartPictureInPicture = false;
+    return rtcEngine.stopPip();
+  }
+
+  @override
+  bool get isInPictureInPictureMode => _isStartPictureInPicture;
 }

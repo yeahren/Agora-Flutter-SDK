@@ -178,7 +178,9 @@ class _State extends State<PictureInPicture> {
                 bottom: 0,
                 child: ElevatedButton(
                   onPressed: () {
-                    // On Android, the width/height is used to calulate the aspectio, but not actual width/height
+                    // On Android, the width and height are used to calculate the aspect ratio,
+                    // not the actual dimensions of the Picture-in-Picture window.
+                    // For more details, see:
                     // https://developer.android.com/reference/android/app/PictureInPictureParams.Builder#setAspectRatio(android.util.Rational)
                     _localVideoViewPipController.startPictureInPicture(
                         const PipOptions(
@@ -233,7 +235,9 @@ class _State extends State<PictureInPicture> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isInPipMode) {
+    // We only need to adjust the UI on Android in pip mode.
+    if (_isInPipMode &&
+        (!kIsWeb && defaultTargetPlatform == TargetPlatform.android)) {
       return _videoViewStack();
     }
 
